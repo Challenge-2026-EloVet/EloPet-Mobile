@@ -20,3 +20,21 @@ export interface QuickStat {
   value: string;
   icon: IconName;
 }
+
+export interface Coordinates {
+  latitude: number;
+  longitude: number;
+}
+
+export interface Clinic {
+  id: string;
+  name: string;
+  distance: string;
+  distanceKm: number;
+  specialties: string[];
+  rating: number;
+  address: string;
+  phone: string;
+  accessibility: string[];
+  coordinates: Coordinates;
+}

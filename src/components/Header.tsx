@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
 
 import type { Pet } from '../types';
 
@@ -12,8 +12,8 @@ export default function Header({ pet }: HeaderProps) {
     <View className="overflow-hidden rounded-b-[32px] bg-[#185A43] px-5 pb-8 pt-5">
       <View className="mb-8 flex-row items-center justify-between">
         <View className="flex-row items-center">
-          <View className="mr-3 h-10 w-10 items-center justify-center rounded-2xl bg-[#A3D9C9]/20">
-            <Ionicons name="heart" size={19} color="#A3D9C9" />
+          <View className="mr-3 h-10 w-10 overflow-hidden rounded-2xl bg-[#A3D9C9]">
+            <Image source={require('../imgs/logo.png')} className="h-full w-full" resizeMode="cover" />
           </View>
           <View>
             <Text className="text-sm font-bold tracking-[2px] text-[#A3D9C9]">ELO VET</Text>

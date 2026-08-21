@@ -8,6 +8,15 @@ export interface Pet {
   tutorCode: string;
 }
 
+export interface Responsible {
+  name: string;
+  email: string;
+  phone: string;
+  city: string;
+  initials: string;
+  memberSince: string;
+}
+
 export interface TodoItem {
   id: string;
   label: string;

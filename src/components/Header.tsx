@@ -17,7 +17,6 @@ export default function Header({ pet }: HeaderProps) {
           </View>
           <View>
             <Text className="text-sm font-bold tracking-[2px] text-[#A3D9C9]">ELO VET</Text>
-            <Text className="mt-1 text-[10px] text-[#A3D9C9]/65">Cuidar de quem amamos: é isso que nos une.</Text>
           </View>
         </View>
         <TouchableOpacity

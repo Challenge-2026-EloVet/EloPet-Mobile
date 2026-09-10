@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { responsible, thor } from '../mocks/mockData';
 
@@ -15,95 +15,98 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[#F8FAFC]">
-      <ScrollView className="flex-1" contentContainerClassName="pb-10" showsVerticalScrollIndicator={false}>
-        <View className="rounded-b-[32px] bg-[#185A43] px-5 pb-9 pt-6">
-          <View className="mb-8 flex-row items-center justify-between">
+    <View style={styles.container}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={styles.headerContainer}>
+          <View style={styles.headerTopRow}>
             <View>
-              <Text className="text-xs font-bold uppercase tracking-[2px] text-[#A3D9C9]">ELO VET</Text>
-              <Text className="mt-2 text-2xl font-bold text-white">Meu perfil</Text>
+              <Text style={styles.brandText}>ELO VET</Text>
+              <Text style={styles.headerTitle}>Meu perfil</Text>
             </View>
             <TouchableOpacity
               accessibilityLabel="Editar perfil"
               activeOpacity={0.75}
-              className="h-10 w-10 items-center justify-center rounded-full bg-[#A3D9C9]/20"
+              style={styles.editButton}
               onPress={() => showActionFeedback('Editar perfil')}
             >
               <Ionicons name="create-outline" size={19} color="#A3D9C9" />
             </TouchableOpacity>
           </View>
-          <View className="flex-row items-center">
-            <View className="h-[76px] w-[76px] items-center justify-center rounded-full border-4 border-[#A3D9C9]/40 bg-[#A3D9C9]">
-              <Text className="text-2xl font-bold text-[#185A43]">{responsible.initials}</Text>
+          <View style={styles.userRow}>
+            <View style={styles.avatarContainer}>
+              <Text style={styles.avatarText}>{responsible.initials}</Text>
             </View>
-            <View className="ml-4 flex-1">
-              <Text className="text-2xl font-bold text-white">{responsible.name}</Text>
-              <Text className="mt-1 text-sm text-[#A3D9C9]/80">{responsible.memberSince}</Text>
+            <View style={styles.userInfo}>
+              <Text style={styles.userName}>{responsible.name}</Text>
+              <Text style={styles.userMemberSince}>{responsible.memberSince}</Text>
             </View>
           </View>
         </View>
 
-        <View className="mx-5 -mt-4 mb-7 rounded-3xl bg-white p-5 shadow-md shadow-[#185A43]/10">
-          <View className="mb-4 flex-row items-center">
-            <View className="h-9 w-9 items-center justify-center rounded-xl bg-[#A3D9C9]/45">
+        <View style={styles.contactCard}>
+          <View style={styles.contactHeader}>
+            <View style={styles.contactIconWrapper}>
               <Ionicons name="person-circle-outline" size={19} color="#185A43" />
             </View>
-            <Text className="ml-3 text-base font-bold text-[#185A43]">Informações de contato</Text>
+            <Text style={styles.contactHeaderTitle}>Informações de contato</Text>
           </View>
-          <View className="border-t border-[#7E9F8E]/15 pt-3">
-            <View className="mb-3 flex-row items-center">
+          <View style={styles.contactDetailsList}>
+            <View style={styles.contactItem}>
               <Ionicons name="mail-outline" size={16} color="#7E9F8E" />
-              <Text className="ml-3 text-sm text-[#185A43]">{responsible.email}</Text>
+              <Text style={styles.contactItemText}>{responsible.email}</Text>
             </View>
-            <View className="mb-3 flex-row items-center">
+            <View style={styles.contactItem}>
               <Ionicons name="call-outline" size={16} color="#7E9F8E" />
-              <Text className="ml-3 text-sm text-[#185A43]">{responsible.phone}</Text>
+              <Text style={styles.contactItemText}>{responsible.phone}</Text>
             </View>
-            <View className="flex-row items-center">
+            <View style={styles.contactItem}>
               <Ionicons name="location-outline" size={16} color="#7E9F8E" />
-              <Text className="ml-3 text-sm text-[#185A43]">{responsible.city}</Text>
+              <Text style={styles.contactItemText}>{responsible.city}</Text>
             </View>
           </View>
         </View>
 
-        <View className="mx-5 mb-7">
-          <View className="mb-4 flex-row items-end justify-between">
+        <View style={styles.sectionContainer}>
+          <View style={styles.sectionHeader}>
             <View>
-              <Text className="text-xl font-bold text-[#185A43]">Meus pets</Text>
-              <Text className="mt-1 text-sm text-[#7E9F8E]">Animais vinculados à sua conta</Text>
+              <Text style={styles.sectionTitle}>Meus pets</Text>
+              <Text style={styles.sectionSubtitle}>Animais vinculados à sua conta</Text>
             </View>
             <TouchableOpacity accessibilityLabel="Adicionar pet" activeOpacity={0.75} onPress={() => showActionFeedback('Adicionar pet')}>
               <Ionicons name="add-circle-outline" size={24} color="#185A43" />
             </TouchableOpacity>
           </View>
-          <View className="flex-row items-center rounded-3xl border border-[#7E9F8E]/20 bg-white p-4 shadow-sm shadow-[#185A43]/5">
-            <View className="h-12 w-12 items-center justify-center rounded-2xl bg-[#A3D9C9]/45">
+          <View style={styles.petCard}>
+            <View style={styles.petIconWrapper}>
               <Ionicons name="paw" size={23} color="#185A43" />
             </View>
-            <View className="ml-3 flex-1">
-              <Text className="text-base font-bold text-[#185A43]">{thor.name}</Text>
-              <Text className="mt-1 text-xs text-[#7E9F8E]">{thor.breed} · Código {thor.tutorCode}</Text>
+            <View style={styles.petInfo}>
+              <Text style={styles.petName}>{thor.name}</Text>
+              <Text style={styles.petDetails}>{thor.breed} · Código {thor.tutorCode}</Text>
             </View>
             <Ionicons name="chevron-forward" size={19} color="#7E9F8E" />
           </View>
         </View>
 
-        <View className="mx-5">
-          <Text className="mb-4 text-xl font-bold text-[#185A43]">Preferências</Text>
-          <View className="overflow-hidden rounded-3xl border border-[#7E9F8E]/20 bg-white">
+        <View style={styles.preferencesContainer}>
+          <Text style={styles.preferencesTitle}>Preferências</Text>
+          <View style={styles.preferencesCard}>
             {profileActions.map((action, index) => (
               <TouchableOpacity
                 key={action.label}
                 activeOpacity={0.72}
-                className={`flex-row items-center p-4 ${index < profileActions.length - 1 ? 'border-b border-[#7E9F8E]/15' : ''}`}
+                style={[
+                  styles.preferenceItem,
+                  index < profileActions.length - 1 ? styles.preferenceItemBorder : null,
+                ]}
                 onPress={() => showActionFeedback(action.label)}
               >
-                <View className="h-10 w-10 items-center justify-center rounded-xl bg-[#A3D9C9]/35">
+                <View style={styles.preferenceIconWrapper}>
                   <Ionicons name={action.icon} size={19} color="#185A43" />
                 </View>
-                <View className="ml-3 flex-1">
-                  <Text className="text-sm font-bold text-[#185A43]">{action.label}</Text>
-                  <Text className="mt-1 text-xs text-[#7E9F8E]">{action.detail}</Text>
+                <View style={styles.preferenceTextInfo}>
+                  <Text style={styles.preferenceLabel}>{action.label}</Text>
+                  <Text style={styles.preferenceDetail}>{action.detail}</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={18} color="#7E9F8E" />
               </TouchableOpacity>
@@ -114,3 +117,234 @@ export default function ProfileScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 40,
+  },
+  headerContainer: {
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
+    backgroundColor: '#185A43',
+    paddingHorizontal: 20,
+    paddingBottom: 36,
+    paddingTop: 24,
+  },
+  headerTopRow: {
+    marginBottom: 32,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  brandText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    letterSpacing: 2,
+    color: '#A3D9C9',
+  },
+  headerTitle: {
+    marginTop: 8,
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  editButton: {
+    height: 40,
+    width: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 999,
+    backgroundColor: 'rgba(163, 217, 201, 0.2)',
+  },
+  userRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatarContainer: {
+    height: 76,
+    width: 76,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 999,
+    borderWidth: 4,
+    borderColor: 'rgba(163, 217, 201, 0.4)',
+    backgroundColor: '#A3D9C9',
+  },
+  avatarText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#185A43',
+  },
+  userInfo: {
+    marginLeft: 16,
+    flex: 1,
+  },
+  userName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  userMemberSince: {
+    marginTop: 4,
+    fontSize: 14,
+    color: 'rgba(163, 217, 201, 0.8)',
+  },
+  contactCard: {
+    marginHorizontal: 20,
+    marginTop: -16,
+    marginBottom: 28,
+    borderRadius: 24,
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    shadowColor: '#185A43',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  contactHeader: {
+    marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  contactIconWrapper: {
+    height: 36,
+    width: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 12,
+    backgroundColor: 'rgba(163, 217, 201, 0.45)',
+  },
+  contactHeaderTitle: {
+    marginLeft: 12,
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#185A43',
+  },
+  contactDetailsList: {
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(126, 159, 142, 0.15)',
+    paddingTop: 12,
+  },
+  contactItem: {
+    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  contactItemText: {
+    marginLeft: 12,
+    fontSize: 14,
+    color: '#185A43',
+  },
+  sectionContainer: {
+    marginHorizontal: 20,
+    marginBottom: 28,
+  },
+  sectionHeader: {
+    marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#185A43',
+  },
+  sectionSubtitle: {
+    marginTop: 4,
+    fontSize: 14,
+    color: '#7E9F8E',
+  },
+  petCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(126, 159, 142, 0.2)',
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    shadowColor: '#185A43',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  petIconWrapper: {
+    height: 48,
+    width: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 16,
+    backgroundColor: 'rgba(163, 217, 201, 0.45)',
+  },
+  petInfo: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  petName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#185A43',
+  },
+  petDetails: {
+    marginTop: 4,
+    fontSize: 12,
+    color: '#7E9F8E',
+  },
+  preferencesContainer: {
+    marginHorizontal: 20,
+  },
+  preferencesTitle: {
+    marginBottom: 16,
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#185A43',
+  },
+  preferencesCard: {
+    overflow: 'hidden',
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(126, 159, 142, 0.2)',
+    backgroundColor: '#FFFFFF',
+  },
+  preferenceItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+  },
+  preferenceItemBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(126, 159, 142, 0.15)',
+  },
+  preferenceIconWrapper: {
+    height: 40,
+    width: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 12,
+    backgroundColor: 'rgba(163, 217, 201, 0.35)',
+  },
+  preferenceTextInfo: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  preferenceLabel: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#185A43',
+  },
+  preferenceDetail: {
+    marginTop: 4,
+    fontSize: 12,
+    color: '#7E9F8E',
+  },
+});

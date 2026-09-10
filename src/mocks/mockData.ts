@@ -1,4 +1,4 @@
-import type { Clinic, Pet, QuickStat, Responsible, TodoItem } from '../types';
+import type { Clinic, Pet, QuickStat, Responsible, TodoItem } from '../types/interfaces';
 
 export const thor: Pet = {
   name: 'Thor',

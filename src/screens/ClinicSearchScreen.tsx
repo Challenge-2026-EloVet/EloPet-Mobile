@@ -1,10 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
-import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import ClinicCard from '../components/ClinicCard';
 import { partnerClinics } from '../mocks/mockData';
-import type { Clinic } from '../types';
+import type { Clinic } from '../types/interfaces';
 
 const filters = ['Ortopedia', 'Cardiologia', 'Até 5km', 'Acessibilidade'];
 
@@ -34,22 +34,22 @@ export default function ClinicSearchScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[#F8FAFC]">
-      <ScrollView className="flex-1" contentContainerClassName="pb-8" showsVerticalScrollIndicator={false}>
-        <View className="bg-[#185A43] px-5 pb-7 pt-6">
-          <View className="mb-6 flex-row items-center justify-between">
+    <View style={styles.container}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={styles.headerContainer}>
+          <View style={styles.headerTopRow}>
             <View>
-              <Text className="text-xs font-bold uppercase tracking-[2px] text-[#A3D9C9]">REDE ELO VET</Text>
-              <Text className="mt-2 text-2xl font-bold text-white">Encontre cuidado perto</Text>
+              <Text style={styles.networkText}>REDE ELO VET</Text>
+              <Text style={styles.headerTitle}>Encontre cuidado perto</Text>
             </View>
-            <View className="h-11 w-11 items-center justify-center rounded-2xl bg-[#A3D9C9]/20">
+            <View style={styles.headerIconWrapper}>
               <Ionicons name="map-outline" size={23} color="#A3D9C9" />
             </View>
           </View>
-          <View className="flex-row items-center rounded-2xl bg-white px-4 py-1">
+          <View style={styles.searchBar}>
             <Ionicons name="search-outline" size={20} color="#7E9F8E" />
             <TextInput
-              className="ml-3 flex-1 py-3 text-sm text-[#185A43]"
+              style={styles.searchInput}
               placeholder="Buscar clínica ou especialidade"
               placeholderTextColor="#7E9F8E"
               value={query}
@@ -59,40 +59,53 @@ export default function ClinicSearchScreen() {
           </View>
         </View>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-2 px-5 py-5">
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filtersScrollContent}>
           {filters.map((filter) => {
             const isActive = activeFilter === filter;
             return (
-              <TouchableOpacity key={filter} activeOpacity={0.75} className={`rounded-full border px-4 py-2.5 ${isActive ? 'border-[#A3D9C9] bg-[#A3D9C9]' : 'border-[#7E9F8E]/30 bg-white'}`} onPress={() => setActiveFilter(isActive ? null : filter)}>
-                <Text className={`text-xs font-bold ${isActive ? 'text-[#185A43]' : 'text-[#7E9F8E]'}`}>{filter}</Text>
+              <TouchableOpacity
+                key={filter}
+                activeOpacity={0.75}
+                style={[
+                  styles.filterButton,
+                  isActive ? styles.filterButtonActive : styles.filterButtonInactive,
+                ]}
+                onPress={() => setActiveFilter(isActive ? null : filter)}
+              >
+                <Text style={[styles.filterText, isActive ? styles.filterTextActive : styles.filterTextInactive]}>{filter}</Text>
               </TouchableOpacity>
             );
           })}
         </ScrollView>
 
-        <View className="mx-5 mb-5 overflow-hidden rounded-[28px] border border-[#7E9F8E]/20 bg-[#EAF3F0] shadow-sm shadow-[#185A43]/5">
-          <View className="h-[250px] overflow-hidden bg-[#EAF3F0]">
-            <View className="absolute -left-5 top-20 h-3 w-[120%] rotate-[18deg] bg-white/70" />
-            <View className="absolute -left-5 top-40 h-2 w-[120%] rotate-[-12deg] bg-white/70" />
-            <View className="absolute left-16 top-[-30px] h-[320px] w-2 rotate-[28deg] bg-white/70" />
-            <View className="absolute left-48 top-[-30px] h-[320px] w-3 rotate-[-32deg] bg-white/70" />
-            <View className="absolute left-80 top-[-30px] h-[320px] w-2 rotate-[12deg] bg-white/70" />
-            <View className="absolute left-5 top-5 rounded-full bg-white/80 px-3 py-2">
-              <Text className="text-[10px] font-bold uppercase tracking-wider text-[#185A43]">Clínicas próximas</Text>
+        <View style={styles.mapCard}>
+          <View style={styles.mapInner}>
+            <View style={styles.mapLine1} />
+            <View style={styles.mapLine2} />
+            <View style={styles.mapLine3} />
+            <View style={styles.mapLine4} />
+            <View style={styles.mapLine5} />
+            <View style={styles.mapBadge}>
+              <Text style={styles.mapBadgeText}>Clínicas próximas</Text>
             </View>
-            <View className="absolute bottom-4 right-4 flex-row items-center rounded-full bg-white/90 px-3 py-2">
+            <View style={styles.locationBadge}>
               <Ionicons name="locate-outline" size={15} color="#185A43" />
-              <Text className="ml-1 text-[10px] font-semibold text-[#185A43]">Sua localização</Text>
+              <Text style={styles.locationBadgeText}>Sua localização</Text>
             </View>
             {filteredClinics.map((clinic) => {
               const isSelected = selectedClinic?.id === clinic.id;
               return (
-                <TouchableOpacity key={clinic.id} activeOpacity={0.7} className="absolute items-center" style={{ left: `${clinic.coordinates.longitude}%`, top: `${clinic.coordinates.latitude}%` }} onPress={() => setSelectedClinicId(clinic.id)}>
-                  <View className={`h-11 w-11 items-center justify-center rounded-full border-2 border-white shadow-md ${isSelected ? 'bg-[#185A43]' : 'bg-[#7E9F8E]'}`}>
+                <TouchableOpacity
+                  key={clinic.id}
+                  activeOpacity={0.7}
+                  style={[styles.pinContainer, { left: `${clinic.coordinates.longitude}%`, top: `${clinic.coordinates.latitude}%` }]}
+                  onPress={() => setSelectedClinicId(clinic.id)}
+                >
+                  <View style={[styles.pinIconWrapper, isSelected ? styles.pinSelected : styles.pinUnselected]}>
                     <Ionicons name="paw" size={19} color="#FFFFFF" />
                   </View>
-                  <View className="mt-1 rounded-full bg-white px-2 py-1 shadow-sm">
-                    <Text className="text-[9px] font-bold text-[#185A43]">{clinic.distance}</Text>
+                  <View style={styles.pinDistanceBadge}>
+                    <Text style={styles.pinDistanceText}>{clinic.distance}</Text>
                   </View>
                 </TouchableOpacity>
               );
@@ -100,23 +113,312 @@ export default function ClinicSearchScreen() {
           </View>
         </View>
 
-        <View className="mx-5 mb-3 flex-row items-end justify-between">
+        <View style={styles.partnersHeader}>
           <View>
-            <Text className="text-xl font-bold text-[#185A43]">Parceiros credenciados</Text>
-            <Text className="mt-1 text-sm text-[#7E9F8E]">{filteredClinics.length} opções para o Thor</Text>
+            <Text style={styles.partnersTitle}>Parceiros credenciados</Text>
+            <Text style={styles.partnersSubtitle}>{filteredClinics.length} opções para o Thor</Text>
           </View>
-          {activeFilter ? <TouchableOpacity activeOpacity={0.7} onPress={() => setActiveFilter(null)}><Text className="text-xs font-bold text-[#185A43]">Limpar filtro</Text></TouchableOpacity> : null}
+          {activeFilter ? <TouchableOpacity activeOpacity={0.7} onPress={() => setActiveFilter(null)}><Text style={styles.clearFilterText}>Limpar filtro</Text></TouchableOpacity> : null}
         </View>
 
-        {selectedClinic ? <View className="mx-5"><ClinicCard clinic={selectedClinic} onRoute={showRouteToast} /></View> : <View className="mx-5 rounded-3xl bg-white p-6"><Text className="text-center text-sm text-[#7E9F8E]">Nenhuma clínica encontrada.</Text></View>}
+        {selectedClinic ? <View style={styles.cardWrapper}><ClinicCard clinic={selectedClinic} onRoute={showRouteToast} /></View> : <View style={styles.emptyCard}><Text style={styles.emptyText}>Nenhuma clínica encontrada.</Text></View>}
       </ScrollView>
       {isToastVisible ? (
-        <View className="absolute bottom-5 left-5 right-5 flex-row items-center rounded-2xl bg-[#185A43] px-4 py-3.5 shadow-lg shadow-[#185A43]/25">
+        <View style={styles.toastContainer}>
           <Ionicons name="navigate" size={18} color="#A3D9C9" />
-          <Text className="ml-3 flex-1 text-sm font-semibold text-white">Traçando rota com o Waze/Maps...</Text>
+          <Text style={styles.toastText}>Traçando rota com o Waze/Maps...</Text>
           <Ionicons name="checkmark-circle" size={18} color="#A3D9C9" />
         </View>
       ) : null}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 32,
+  },
+  headerContainer: {
+    backgroundColor: '#185A43',
+    paddingHorizontal: 20,
+    paddingBottom: 28,
+    paddingTop: 24,
+  },
+  headerTopRow: {
+    marginBottom: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  networkText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    letterSpacing: 2,
+    color: '#A3D9C9',
+  },
+  headerTitle: {
+    marginTop: 8,
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  headerIconWrapper: {
+    height: 44,
+    width: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 16,
+    backgroundColor: 'rgba(163, 217, 201, 0.2)',
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+  },
+  searchInput: {
+    marginLeft: 12,
+    flex: 1,
+    paddingVertical: 12,
+    fontSize: 14,
+    color: '#185A43',
+  },
+  filtersScrollContent: {
+    gap: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+  },
+  filterButton: {
+    borderRadius: 999,
+    borderWidth: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  filterButtonActive: {
+    borderColor: '#A3D9C9',
+    backgroundColor: '#A3D9C9',
+  },
+  filterButtonInactive: {
+    borderColor: 'rgba(126, 159, 142, 0.3)',
+    backgroundColor: '#FFFFFF',
+  },
+  filterText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  filterTextActive: {
+    color: '#185A43',
+  },
+  filterTextInactive: {
+    color: '#7E9F8E',
+  },
+  mapCard: {
+    marginHorizontal: 20,
+    marginBottom: 20,
+    overflow: 'hidden',
+    borderRadius: 28,
+    borderWidth: 1,
+    borderColor: 'rgba(126, 159, 142, 0.2)',
+    backgroundColor: '#EAF3F0',
+    shadowColor: '#185A43',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  mapInner: {
+    height: 250,
+    overflow: 'hidden',
+    backgroundColor: '#EAF3F0',
+    position: 'relative',
+  },
+  mapLine1: {
+    position: 'absolute',
+    left: -20,
+    top: 80,
+    height: 12,
+    width: '120%',
+    transform: [{ rotate: '18deg' }],
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+  },
+  mapLine2: {
+    position: 'absolute',
+    left: -20,
+    top: 160,
+    height: 8,
+    width: '120%',
+    transform: [{ rotate: '-12deg' }],
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+  },
+  mapLine3: {
+    position: 'absolute',
+    left: 64,
+    top: -30,
+    height: 320,
+    width: 8,
+    transform: [{ rotate: '28deg' }],
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+  },
+  mapLine4: {
+    position: 'absolute',
+    left: 192,
+    top: -30,
+    height: 320,
+    width: 12,
+    transform: [{ rotate: '-32deg' }],
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+  },
+  mapLine5: {
+    position: 'absolute',
+    left: 320,
+    top: -30,
+    height: 320,
+    width: 8,
+    transform: [{ rotate: '12deg' }],
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+  },
+  mapBadge: {
+    position: 'absolute',
+    left: 20,
+    top: 20,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  mapBadgeText: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    color: '#185A43',
+  },
+  locationBadge: {
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 999,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  locationBadgeText: {
+    marginLeft: 4,
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#185A43',
+  },
+  pinContainer: {
+    position: 'absolute',
+    alignItems: 'center',
+  },
+  pinIconWrapper: {
+    height: 44,
+    width: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 999,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 4,
+  },
+  pinSelected: {
+    backgroundColor: '#185A43',
+  },
+  pinUnselected: {
+    backgroundColor: '#7E9F8E',
+  },
+  pinDistanceBadge: {
+    marginTop: 4,
+    borderRadius: 999,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  pinDistanceText: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    color: '#185A43',
+  },
+  partnersHeader: {
+    marginHorizontal: 20,
+    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+  },
+  partnersTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#185A43',
+  },
+  partnersSubtitle: {
+    marginTop: 4,
+    fontSize: 14,
+    color: '#7E9F8E',
+  },
+  clearFilterText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#185A43',
+  },
+  cardWrapper: {
+    marginHorizontal: 20,
+  },
+  emptyCard: {
+    marginHorizontal: 20,
+    borderRadius: 24,
+    backgroundColor: '#FFFFFF',
+    padding: 24,
+  },
+  emptyText: {
+    textAlign: 'center',
+    fontSize: 14,
+    color: '#7E9F8E',
+  },
+  toastContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    right: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 16,
+    backgroundColor: '#185A43',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    shadowColor: '#185A43',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 6,
+  },
+  toastText: {
+    marginLeft: 12,
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+});

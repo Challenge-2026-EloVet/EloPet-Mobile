@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "EloPet-app",
-    "slug": "EloPet-app",
+    "name": "EloPet",
+    "slug": "EloPet",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/imgs/logo.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true
@@ -16,14 +16,10 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.EloPetapp"
+      "predictiveBackGestureEnabled": false
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    },
-    "plugins": [
-      "expo-font"
-    ]
+    }
   }
 }

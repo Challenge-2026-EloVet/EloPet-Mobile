@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Alert, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import type { Clinic } from '../types';
+import type { Clinic } from '../types/interfaces';
 
 type ClinicCardProps = {
   clinic: Clinic;
@@ -16,49 +16,174 @@ export default function ClinicCard({ clinic, onRoute }: ClinicCardProps) {
   };
 
   return (
-    <View className="rounded-[28px] border border-[#7E9F8E]/20 bg-white p-5 shadow-md shadow-[#185A43]/10">
-      <View className="mb-4 flex-row items-start justify-between">
-        <View className="flex-1 pr-3">
-          <Text className="text-lg font-bold text-[#185A43]">{clinic.name}</Text>
-          <View className="mt-2 flex-row items-center">
+    <View style={styles.card}>
+      <View style={styles.header}>
+        <View style={styles.headerInfo}>
+          <Text style={styles.clinicName}>{clinic.name}</Text>
+          <View style={styles.locationContainer}>
             <Ionicons name="location-outline" size={15} color="#7E9F8E" />
-            <Text className="ml-1 text-xs text-[#7E9F8E]">{clinic.distance} · {clinic.address}</Text>
+            <Text style={styles.locationText}>{clinic.distance} · {clinic.address}</Text>
           </View>
         </View>
-        <View className="flex-row items-center rounded-full bg-[#DFB461]/20 px-2.5 py-1.5">
+        <View style={styles.ratingBadge}>
           <Ionicons name="star" size={13} color="#DFB461" />
-          <Text className="ml-1 text-xs font-bold text-[#185A43]">{clinic.rating}</Text>
+          <Text style={styles.ratingText}>{clinic.rating}</Text>
         </View>
       </View>
 
-      <View className="mb-4 flex-row flex-wrap gap-2">
+      <View style={styles.tagsContainer}>
         {clinic.specialties.map((specialty) => (
-          <View key={specialty} className="rounded-full bg-[#A3D9C9]/35 px-3 py-1.5">
-            <Text className="text-[11px] font-semibold text-[#185A43]">{specialty}</Text>
+          <View key={specialty} style={styles.specialtyBadge}>
+            <Text style={styles.specialtyText}>{specialty}</Text>
           </View>
         ))}
         {clinic.accessibility.map((item) => (
-          <View key={item} className="rounded-full border border-[#7E9F8E]/25 px-3 py-1.5">
-            <Text className="text-[11px] font-medium text-[#7E9F8E]">{item}</Text>
+          <View key={item} style={styles.accessibilityBadge}>
+            <Text style={styles.accessibilityText}>{item}</Text>
           </View>
         ))}
       </View>
 
-      <View className="mb-5 flex-row items-center">
+      <View style={styles.phoneContainer}>
         <Ionicons name="call-outline" size={15} color="#7E9F8E" />
-        <Text className="ml-2 text-xs text-[#7E9F8E]">{clinic.phone}</Text>
+        <Text style={styles.phoneText}>{clinic.phone}</Text>
       </View>
 
-      <View className="flex-row gap-3">
-        <TouchableOpacity activeOpacity={0.75} className="flex-1 flex-row items-center justify-center rounded-2xl bg-[#185A43] px-3 py-3.5" onPress={confirmAppointment}>
+      <View style={styles.actionsContainer}>
+        <TouchableOpacity activeOpacity={0.75} style={[styles.button, styles.primaryButton]} onPress={confirmAppointment}>
           <Ionicons name="calendar-outline" size={17} color="#FFFFFF" />
-          <Text className="ml-2 text-xs font-bold text-white">Agendar Consulta</Text>
+          <Text style={styles.primaryButtonText}>Agendar Consulta</Text>
         </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.75} className="flex-row items-center justify-center rounded-2xl border border-[#185A43] px-3 py-3.5" onPress={onRoute}>
+        <TouchableOpacity activeOpacity={0.75} style={[styles.button, styles.secondaryButton]} onPress={onRoute}>
           <Ionicons name="navigate-outline" size={17} color="#185A43" />
-          <Text className="ml-2 text-xs font-bold text-[#185A43]">Como Chegar</Text>
+          <Text style={styles.secondaryButtonText}>Como Chegar</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    borderRadius: 28,
+    borderWidth: 1,
+    borderColor: 'rgba(126, 159, 142, 0.2)',
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    shadowColor: '#185A43',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3, // Equivalente a shadow-md no Android
+  },
+  header: {
+    marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  headerInfo: {
+    flex: 1,
+    paddingRight: 12,
+  },
+  clinicName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#185A43',
+  },
+  locationContainer: {
+    marginTop: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  locationText: {
+    marginLeft: 4,
+    fontSize: 12,
+    color: '#7E9F8E',
+  },
+  ratingBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(223, 180, 97, 0.2)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+  ratingText: {
+    marginLeft: 4,
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#185A43',
+  },
+  tagsContainer: {
+    marginBottom: 16,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8, // Nota: 'gap' é suportado nas versões mais recentes do React Native. Se der erro, use margin nas tags.
+  },
+  specialtyBadge: {
+    borderRadius: 999,
+    backgroundColor: 'rgba(163, 217, 201, 0.35)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  specialtyText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#185A43',
+  },
+  accessibilityBadge: {
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(126, 159, 142, 0.25)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  accessibilityText: {
+    fontSize: 11,
+    fontWeight: '500',
+    color: '#7E9F8E',
+  },
+  phoneContainer: {
+    marginBottom: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  phoneText: {
+    marginLeft: 8,
+    fontSize: 12,
+    color: '#7E9F8E',
+  },
+  actionsContainer: {
+    flexDirection: 'row',
+    gap: 12, // Nota: Equivalente a gap-3.
+  },
+  button: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 14,
+  },
+  primaryButton: {
+    backgroundColor: '#185A43',
+  },
+  primaryButtonText: {
+    marginLeft: 8,
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  secondaryButton: {
+    borderWidth: 1,
+    borderColor: '#185A43',
+  },
+  secondaryButtonText: {
+    marginLeft: 8,
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#185A43',
+  },
+});

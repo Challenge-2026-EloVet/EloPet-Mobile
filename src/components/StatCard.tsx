@@ -1,16 +1,55 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
-import type { QuickStat } from '../types';
+import type { QuickStat } from '../types/interfaces';
 
 export default function StatCard({ stat }: { stat: QuickStat }) {
   return (
-    <View className="min-h-[142px] flex-1 rounded-3xl border border-[#7E9F8E]/25 bg-white p-4 shadow-sm shadow-[#185A43]/5">
-      <View className="mb-5 h-9 w-9 items-center justify-center rounded-xl bg-[#A3D9C9]/45">
+    <View style={styles.card}>
+      <View style={styles.iconContainer}>
         <Ionicons name={stat.icon} size={19} color="#185A43" />
       </View>
-      <Text className="text-xs font-medium leading-4 text-[#7E9F8E]">{stat.label}</Text>
-      <Text className="mt-1 text-base font-bold leading-5 text-[#185A43]">{stat.value}</Text>
+      <Text style={styles.label}>{stat.label}</Text>
+      <Text style={styles.value}>{stat.value}</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    minHeight: 142,
+    flex: 1,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(126, 159, 142, 0.25)',
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    shadowColor: '#185A43',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  iconContainer: {
+    marginBottom: 20,
+    height: 36,
+    width: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 12,
+    backgroundColor: 'rgba(163, 217, 201, 0.45)',
+  },
+  label: {
+    fontSize: 12,
+    fontWeight: '500',
+    lineHeight: 16,
+    color: '#7E9F8E',
+  },
+  value: {
+    marginTop: 4,
+    fontSize: 16,
+    fontWeight: 'bold',
+    lineHeight: 20,
+    color: '#185A43',
+  },
+});

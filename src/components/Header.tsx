@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import type { Pet } from '../types';
+import type { Pet } from '../types/interfaces';
 
 type HeaderProps = {
   pet: Pet;
@@ -9,36 +9,126 @@ type HeaderProps = {
 
 export default function Header({ pet }: HeaderProps) {
   return (
-    <View className="overflow-hidden rounded-b-[32px] bg-[#185A43] px-5 pb-8 pt-5">
-      <View className="mb-8 flex-row items-center justify-between">
-        <View className="flex-row items-center">
-          <View className="mr-3 h-10 w-10 overflow-hidden rounded-2xl bg-[#A3D9C9]">
-            <Image source={require('../imgs/logo.png')} className="h-full w-full" resizeMode="cover" />
+    <View style={styles.headerContainer}>
+      <View style={styles.topRow}>
+        <View style={styles.logoContainer}>
+          <View style={styles.logoWrapper}>
+            <Image source={require('../../assets/logo.png')} style={styles.logoImage} resizeMode="cover" />
           </View>
           <View>
-            <Text className="text-sm font-bold tracking-[2px] text-[#A3D9C9]">ELO VET</Text>
+            <Text style={styles.brandText}>ELO VET</Text>
           </View>
         </View>
         <TouchableOpacity
           accessibilityLabel="Abrir notificações"
           activeOpacity={0.7}
-          className="h-10 w-10 items-center justify-center rounded-full bg-[#A3D9C9]/15"
+          style={styles.notificationButton}
         >
           <Ionicons name="notifications-outline" size={20} color="#A3D9C9" />
         </TouchableOpacity>
       </View>
 
-      <View className="flex-row items-end justify-between">
-        <View className="flex-1 pr-4">
-          <Text className="mb-1 text-sm font-medium text-[#A3D9C9]/70">HEALTH HUB</Text>
-          <Text className="text-3xl font-bold tracking-tight text-white">Olá, tutor do {pet.name}!</Text>
-          <Text className="mt-2 text-base text-[#A3D9C9]/80">Veja como ele está hoje.</Text>
+      <View style={styles.bottomRow}>
+        <View style={styles.welcomeContainer}>
+          <Text style={styles.hubText}>HEALTH HUB</Text>
+          <Text style={styles.greetingText}>Olá, tutor do {pet.name}!</Text>
+          <Text style={styles.subtitleText}>Veja como ele está hoje.</Text>
         </View>
-        <View className="items-center rounded-2xl border border-[#A3D9C9]/30 bg-[#A3D9C9]/10 px-3 py-2.5">
+        <View style={styles.codeBadge}>
           <Ionicons name="paw" size={18} color="#A3D9C9" />
-          <Text className="mt-1 text-xs font-bold tracking-wider text-[#A3D9C9]">{pet.tutorCode}</Text>
+          <Text style={styles.codeText}>{pet.tutorCode}</Text>
         </View>
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  headerContainer: {
+    overflow: 'hidden',
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
+    backgroundColor: '#185A43',
+    paddingHorizontal: 20,
+    paddingBottom: 32,
+    paddingTop: 20,
+  },
+  topRow: {
+    marginBottom: 32,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logoWrapper: {
+    marginRight: 12,
+    height: 40,
+    width: 40,
+    overflow: 'hidden',
+    borderRadius: 16,
+    backgroundColor: '#A3D9C9',
+  },
+  logoImage: {
+    height: '100%',
+    width: '100%',
+  },
+  brandText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    letterSpacing: 2,
+    color: '#A3D9C9',
+  },
+  notificationButton: {
+    height: 40,
+    width: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 999,
+    backgroundColor: 'rgba(163, 217, 201, 0.15)',
+  },
+  bottomRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+  },
+  welcomeContainer: {
+    flex: 1,
+    paddingRight: 16,
+  },
+  hubText: {
+    marginBottom: 4,
+    fontSize: 14,
+    fontWeight: 'medium',
+    color: 'rgba(163, 217, 201, 0.7)',
+  },
+  greetingText: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    letterSpacing: -0.5,
+    color: '#FFFFFF',
+  },
+  subtitleText: {
+    marginTop: 8,
+    fontSize: 16,
+    color: 'rgba(163, 217, 201, 0.8)',
+  },
+  codeBadge: {
+    alignItems: 'center',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(163, 217, 201, 0.3)',
+    backgroundColor: 'rgba(163, 217, 201, 0.1)',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  codeText: {
+    marginTop: 4,
+    fontSize: 12,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+    color: '#A3D9C9',
+  },
+});

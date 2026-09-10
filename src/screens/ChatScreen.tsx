@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useRef, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 type Message = {
   id: string;
@@ -60,22 +60,22 @@ export default function ChatScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[#F8FAFC]">
-      <View className="bg-[#185A43] px-5 pb-5 pt-5">
-        <View className="flex-row items-center">
-          <View className="mr-3 h-12 w-12 items-center justify-center rounded-full bg-[#A3D9C9]/25">
+    <View style={styles.container}>
+      <View style={styles.headerContainer}>
+        <View style={styles.headerRow}>
+          <View style={styles.avatarContainer}>
             <Ionicons name="medical" size={22} color="#A3D9C9" />
           </View>
-          <View className="flex-1">
-            <View className="flex-row items-center">
-              <Text className="text-base font-bold text-white">Assistente Elo Vet</Text>
-              <View className="ml-2 h-4 w-4 items-center justify-center rounded-full bg-[#A3D9C9]">
+          <View style={styles.headerInfo}>
+            <View style={styles.titleRow}>
+              <Text style={styles.headerTitle}>Assistente Elo Vet</Text>
+              <View style={styles.checkBadge}>
                 <Ionicons name="checkmark" size={11} color="#185A43" />
               </View>
             </View>
-            <Text className="mt-1 text-xs text-[#A3D9C9]/75">Clínica VetLife · online agora</Text>
+            <Text style={styles.headerSubtitle}>Clínica VetLife · online agora</Text>
           </View>
-          <TouchableOpacity accessibilityLabel="Mais opções" activeOpacity={0.7} className="h-9 w-9 items-center justify-center">
+          <TouchableOpacity accessibilityLabel="Mais opções" activeOpacity={0.7} style={styles.optionsButton}>
             <Ionicons name="ellipsis-vertical" size={20} color="#A3D9C9" />
           </TouchableOpacity>
         </View>
@@ -83,46 +83,77 @@ export default function ChatScreen() {
 
       <ScrollView
         ref={scrollViewRef}
-        className="flex-1"
-        contentContainerClassName="px-5 pb-5 pt-6"
+        style={styles.chatScroll}
+        contentContainerStyle={styles.chatContentContainer}
         showsVerticalScrollIndicator={false}
       >
-        <View className="mb-6 self-center rounded-full bg-[#A3D9C9]/35 px-3 py-1">
-          <Text className="text-[10px] font-bold uppercase tracking-wider text-[#185A43]">Diário de saúde · hoje</Text>
+        <View style={styles.dateBadge}>
+          <Text style={styles.dateBadgeText}>Diário de saúde · hoje</Text>
         </View>
 
-        {messages.map((message) => (
-          <View key={message.id} className={`mb-3 max-w-[86%] ${message.sender === 'tutor' ? 'self-end' : 'self-start'}`}>
-            <View className={`rounded-2xl px-4 py-3 ${message.sender === 'tutor' ? 'rounded-br-sm bg-[#185A43]' : 'rounded-bl-sm border border-[#7E9F8E]/15 bg-white'}`}>
-              <Text className={`text-[15px] leading-5 ${message.sender === 'tutor' ? 'text-white' : 'text-[#185A43]'}`}>{message.text}</Text>
+        {messages.map((message) => {
+          const isTutor = message.sender === 'tutor';
+          return (
+            <View
+              key={message.id}
+              style={[
+                styles.messageWrapper,
+                isTutor ? styles.messageWrapperTutor : styles.messageWrapperAssistant,
+              ]}
+            >
+              <View
+                style={[
+                  styles.messageBubble,
+                  isTutor ? styles.bubbleTutor : styles.bubbleAssistant,
+                ]}
+              >
+                <Text style={[styles.messageText, isTutor ? styles.textTutor : styles.textAssistant]}>
+                  {message.text}
+                </Text>
+              </View>
+              <Text style={[styles.messageTime, isTutor ? styles.timeTutor : styles.timeAssistant]}>
+                {isTutor ? 'Você · agora' : 'Assistente Elo Vet · agora'}
+              </Text>
             </View>
-            <Text className={`mt-1 text-[10px] text-[#7E9F8E] ${message.sender === 'tutor' ? 'text-right' : 'text-left'}`}>
-              {message.sender === 'tutor' ? 'Você · agora' : 'Assistente Elo Vet · agora'}
-            </Text>
-          </View>
-        ))}
+          );
+        })}
 
         {isSending ? (
-          <View className="mb-3 self-start rounded-2xl rounded-bl-sm border border-[#7E9F8E]/15 bg-white px-4 py-3">
-            <Text className="text-sm italic text-[#7E9F8E]">Assistente está digitando...</Text>
+          <View style={[styles.messageWrapper, styles.messageWrapperAssistant]}>
+            <View style={[styles.messageBubble, styles.bubbleAssistant]}>
+              <Text style={styles.typingText}>Assistente está digitando...</Text>
+            </View>
           </View>
         ) : null}
       </ScrollView>
 
-      <View className="border-t border-[#7E9F8E]/15 bg-white px-5 pb-5 pt-4">
-        <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-[#7E9F8E]">Respostas rápidas</Text>
-        <View className="gap-2">
+      <View style={styles.footerContainer}>
+        <Text style={styles.quickRepliesTitle}>Respostas rápidas</Text>
+        <View style={styles.quickRepliesList}>
           {quickReplies.map((reply, index) => (
             <TouchableOpacity
               key={reply}
               accessibilityRole="button"
               activeOpacity={0.72}
-              className={`flex-row items-center rounded-2xl border px-4 py-3 ${isSending ? 'border-[#7E9F8E]/15 bg-[#F8FAFC] opacity-50' : 'border-[#185A43]/20 bg-[#A3D9C9]/15'}`}
+              style={[
+                styles.quickReplyButton,
+                isSending ? styles.quickReplyDisabled : styles.quickReplyActive,
+              ]}
               disabled={isSending}
               onPress={() => sendReply(reply)}
             >
-              <Ionicons name={index === 0 ? 'sunny-outline' : index === 1 ? 'restaurant-outline' : 'heart-dislike-outline'} size={17} color="#185A43" />
-              <Text className="ml-3 flex-1 text-sm font-semibold text-[#185A43]">{reply}</Text>
+              <Ionicons
+                name={
+                  index === 0
+                    ? 'sunny-outline'
+                    : index === 1
+                    ? 'restaurant-outline'
+                    : 'heart-dislike-outline'
+                }
+                size={17}
+                color="#185A43"
+              />
+              <Text style={styles.quickReplyText}>{reply}</Text>
               <Ionicons name="arrow-up-circle-outline" size={19} color="#185A43" />
             </TouchableOpacity>
           ))}
@@ -131,3 +162,178 @@ export default function ChatScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+  },
+  headerContainer: {
+    backgroundColor: '#185A43',
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    paddingTop: 20,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatarContainer: {
+    marginRight: 12,
+    height: 48,
+    width: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 999,
+    backgroundColor: 'rgba(163, 217, 201, 0.25)',
+  },
+  headerInfo: {
+    flex: 1,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  checkBadge: {
+    marginLeft: 8,
+    height: 16,
+    width: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 999,
+    backgroundColor: '#A3D9C9',
+  },
+  headerSubtitle: {
+    marginTop: 4,
+    fontSize: 12,
+    color: 'rgba(163, 217, 201, 0.75)',
+  },
+  optionsButton: {
+    height: 36,
+    width: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  chatScroll: {
+    flex: 1,
+  },
+  chatContentContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    paddingTop: 24,
+  },
+  dateBadge: {
+    marginBottom: 24,
+    alignSelf: 'center',
+    borderRadius: 999,
+    backgroundColor: 'rgba(163, 217, 201, 0.35)',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  dateBadgeText: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    color: '#185A43',
+  },
+  messageWrapper: {
+    marginBottom: 12,
+    maxWidth: '86%',
+  },
+  messageWrapperTutor: {
+    alignSelf: 'flex-end',
+  },
+  messageWrapperAssistant: {
+    alignSelf: 'flex-start',
+  },
+  messageBubble: {
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  bubbleTutor: {
+    borderBottomRightRadius: 4,
+    backgroundColor: '#185A43',
+  },
+  bubbleAssistant: {
+    borderBottomLeftRadius: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(126, 159, 142, 0.15)',
+    backgroundColor: '#FFFFFF',
+  },
+  messageText: {
+    fontSize: 15,
+    lineHeight: 20,
+  },
+  textTutor: {
+    color: '#FFFFFF',
+  },
+  textAssistant: {
+    color: '#185A43',
+  },
+  typingText: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    color: '#7E9F8E',
+  },
+  messageTime: {
+    marginTop: 4,
+    fontSize: 10,
+    color: '#7E9F8E',
+  },
+  timeTutor: {
+    textAlign: 'right',
+  },
+  timeAssistant: {
+    textAlign: 'left',
+  },
+  footerContainer: {
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(126, 159, 142, 0.15)',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    paddingTop: 16,
+  },
+  quickRepliesTitle: {
+    marginBottom: 12,
+    fontSize: 12,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    color: '#7E9F8E',
+  },
+  quickRepliesList: {
+    gap: 8,
+  },
+  quickReplyButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 16,
+    borderWidth: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  quickReplyActive: {
+    borderColor: 'rgba(24, 90, 67, 0.2)',
+    backgroundColor: 'rgba(163, 217, 201, 0.15)',
+  },
+  quickReplyDisabled: {
+    borderColor: 'rgba(126, 159, 142, 0.15)',
+    backgroundColor: '#F8FAFC',
+    opacity: 0.5,
+  },
+  quickReplyText: {
+    marginLeft: 12,
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#185A43',
+  },
+});

@@ -1,29 +1,70 @@
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Header from '../components/Header';
 import RiskScoreCard from '../components/RiskScoreCard';
 import StatCard from '../components/StatCard';
-import TodoListCuidados from '../components/TodoListCuidados';
+import TodoListCuidados from '../components/TodoList';
 import { careTasks, quickStats, thor } from '../mocks/mockData';
 
 export default function HomeScreen() {
   return (
-    <View className="flex-1 bg-[#F8FAFC]">
-      <ScrollView className="flex-1" contentContainerClassName="pb-12" showsVerticalScrollIndicator={false}>
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         <Header pet={thor} />
         <RiskScoreCard pet={thor} />
 
-        <View className="mx-5 mb-4 flex-row items-end justify-between">
+        <View style={styles.sectionHeaderContainer}>
           <View>
-            <Text className="text-xl font-bold text-[#185A43]">Resumo de saúde</Text>
-            <Text className="mt-1 text-sm text-[#7E9F8E]">Os dados mais importantes do Thor</Text>
+            <Text style={styles.sectionTitle}>Resumo de saúde</Text>
+            <Text style={styles.sectionSubtitle}>Os dados mais importantes do Thor</Text>
           </View>
         </View>
-        <View className="mx-5 flex-row gap-3">
-          {quickStats.map((stat) => <StatCard key={stat.label} stat={stat} />)}
+        <View style={styles.statsContainer}>
+          {quickStats.map((stat) => (
+            <StatCard key={stat.label} stat={stat} />
+          ))}
         </View>
         <TodoListCuidados tasks={careTasks} />
       </ScrollView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F8FAFC',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 48,
+  },
+  sectionHeaderContainer: {
+    marginHorizontal: 20,
+    marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#185A43',
+  },
+  sectionSubtitle: {
+    marginTop: 4,
+    fontSize: 14,
+    color: '#7E9F8E',
+  },
+  statsContainer: {
+    marginHorizontal: 20,
+    flexDirection: 'row',
+    gap: 12,
+  },
+});

@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Alert,
   Modal,
@@ -11,30 +11,14 @@ import {
   View,
 } from 'react-native';
 
-import { thor } from '../mocks/mockData';
-import { useRoute } from '@react-navigation/native';
-import { User } from '../types/interfaces';
+import { responsible, thor } from '../mocks/mockData';
 
 export default function ProfileScreen() {
-  const route = useRoute<any>();
-  const userFromParams : User = route.params?.user || {};
-
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState(userFromParams.nomeUsuario || 'Usuário');
-  const [email, setEmail] = useState(userFromParams.email || '');
-  // const [phone, setPhone] = useState(userFromParams.phone || '(11) 99999-9999');
-  // const [city, setCity] = useState(userFromParams.city || 'São Paulo - SP');
-
-  const getInitials = (text: string) => {
-    if (!text) return 'UV';
-    const parts = text.trim().split(' ');
-    if (parts.length >= 2) {
-      return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-    }
-    return text.substring(0, 2).toUpperCase();
-  };
-
-  const userInitials = getInitials(name);
+  const [name, setName] = useState(responsible.name);
+  const [email, setEmail] = useState(responsible.email);
+  const [phone, setPhone] = useState(responsible.phone);
+  const [city, setCity] = useState(responsible.city);
 
   const profileActions = [
     { 
@@ -86,11 +70,11 @@ export default function ProfileScreen() {
           </View>
           <View style={styles.userRow}>
             <View style={styles.avatarContainer}>
-              <Text style={styles.avatarText}>{userInitials}</Text>
+              <Text style={styles.avatarText}>{responsible.initials}</Text>
             </View>
             <View style={styles.userInfo}>
               <Text style={styles.userName}>{name}</Text>
-              <Text style={styles.userMemberSince}>Membro desde 2026</Text>
+              <Text style={styles.userMemberSince}>{responsible.memberSince}</Text>
             </View>
           </View>
         </View>
@@ -109,11 +93,11 @@ export default function ProfileScreen() {
             </View>
             <View style={styles.contactItem}>
               <Ionicons name="call-outline" size={16} color="#7E9F8E" />
-              {/* <Text style={styles.contactItemText}>{phone}</Text> */}
+              <Text style={styles.contactItemText}>{phone}</Text>
             </View>
             <View style={styles.contactItem}>
               <Ionicons name="location-outline" size={16} color="#7E9F8E" />
-              {/* <Text style={styles.contactItemText}>{city}</Text> */}
+              <Text style={styles.contactItemText}>{city}</Text>
             </View>
           </View>
         </View>
@@ -212,8 +196,8 @@ export default function ProfileScreen() {
                 <Text style={styles.inputLabel}>Telefone</Text>
                 <TextInput
                   style={styles.textInput}
-                  // value={phone}
-                  // onChangeText={setPhone}
+                  value={phone}
+                  onChangeText={setPhone}
                   placeholder="Seu telefone"
                   placeholderTextColor="#7E9F8E"
                   keyboardType="phone-pad"
@@ -224,8 +208,8 @@ export default function ProfileScreen() {
                 <Text style={styles.inputLabel}>Cidade</Text>
                 <TextInput
                   style={styles.textInput}
-                  // value={city}
-                  // onChangeText={setCity}
+                  value={city}
+                  onChangeText={setCity}
                   placeholder="Sua cidade"
                   placeholderTextColor="#7E9F8E"
                 />
@@ -235,7 +219,6 @@ export default function ProfileScreen() {
                 <TouchableOpacity
                   style={styles.cancelButton}
                   activeOpacity={0.75}
-                  pressRetentionOffset={{ top: 10, bottom: 10, left: 10, right: 10 }}
                   onPress={() => setIsEditing(false)}
                 >
                   <Text style={styles.cancelButtonText}>Cancelar</Text>
@@ -480,6 +463,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#7E9F8E',
   },
+  // Estilos do Modal e do Formulário
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',

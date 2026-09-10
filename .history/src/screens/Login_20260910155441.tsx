@@ -35,6 +35,7 @@ export default function Login() {
 
       console.log('Login bem-sucedido');
       
+      // Corrigido: adicionado '=' e ajustado para corresponder à interface User
       const user: User = {
         nomeUsuario: username,
         email: email || '', 

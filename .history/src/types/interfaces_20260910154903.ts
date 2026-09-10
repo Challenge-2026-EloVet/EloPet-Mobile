@@ -5,8 +5,11 @@ export type IconName = keyof typeof Ionicons.glyphMap;
 export interface User {
   nomeUsuario: string,
   email: string,
-  senha: string,
-  tipoUsuario: string
+  raca: string,
+  sexo: string,
+  dataNascimento: string,
+  idadeAproximada: number,
+  flagCastrado: number
 }
 
 export interface Pet {

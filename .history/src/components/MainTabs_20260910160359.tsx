@@ -4,22 +4,14 @@ import ChatScreen from '../screens/ChatScreen';
 import ClinicSearchScreen from '../screens/ClinicSearchScreen';
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import { User } from '../types/interfaces';
-import { useRoute } from '@react-navigation/native';
-import { useState, useEffect } from 'react';
 
 const Tab = createBottomTabNavigator();
 
 export default function MainTabs() {
+
   const route = useRoute<any>();
-  const [currentUser, setCurrentUser] = useState<User | null>(route.params?.user || null);
 
-  useEffect(() => {
-    if (route.params?.user) {
-      setCurrentUser(route.params.user);
-    }
-  }, [route.params?.user]);
-
+  const [currentOperator, setCurrentOperator] = useState<Operator | null>(route.params?.operator || null);
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -47,30 +39,10 @@ export default function MainTabs() {
         ),
       })}
     >
-      <Tab.Screen 
-        name="Home" 
-        component={HomeScreen} 
-        options={{ tabBarLabel: 'Resumo' }} 
-        initialParams={{ user: currentUser }}
-      />
-      <Tab.Screen 
-        name="Chat" 
-        component={ChatScreen} 
-        options={{ tabBarLabel: 'Diário de saúde' }} 
-        initialParams={{ user: currentUser }}
-      />
-      <Tab.Screen 
-        name="Network" 
-        component={ClinicSearchScreen} 
-        options={{ tabBarLabel: 'Rede credenciada' }} 
-        initialParams={{ user: currentUser }}
-      />
-      <Tab.Screen 
-        name="Profile" 
-        component={ProfileScreen} 
-        options={{ tabBarLabel: 'Perfil' }} 
-        initialParams={{ user: currentUser }}
-      />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarLabel: 'Resumo' }} />
+      <Tab.Screen name="Chat" component={ChatScreen} options={{ tabBarLabel: 'Diário de saúde' }} />
+      <Tab.Screen name="Network" component={ClinicSearchScreen} options={{ tabBarLabel: 'Rede credenciada' }} />
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{ tabBarLabel: 'Perfil' }} />
     </Tab.Navigator>
   );
 }

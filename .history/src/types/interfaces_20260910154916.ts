@@ -6,7 +6,7 @@ export interface User {
   nomeUsuario: string,
   email: string,
   senha: string,
-  tipoUsuario: string
+  tipoUsuario: string,
 }
 
 export interface Pet {

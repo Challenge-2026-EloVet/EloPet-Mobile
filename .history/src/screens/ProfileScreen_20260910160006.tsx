@@ -20,11 +20,12 @@ export default function ProfileScreen() {
   const userFromParams : User = route.params?.user || {};
 
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState(userFromParams.nomeUsuario || 'Usuário');
+  const [name, setName] = useState(userFromParams.userName || 'Usuário');
   const [email, setEmail] = useState(userFromParams.email || '');
-  // const [phone, setPhone] = useState(userFromParams.phone || '(11) 99999-9999');
-  // const [city, setCity] = useState(userFromParams.city || 'São Paulo - SP');
+  const [phone, setPhone] = useState(userFromParams.phone || '(11) 99999-9999');
+  const [city, setCity] = useState(userFromParams.city || 'São Paulo - SP');
 
+  // Gera as iniciais para o avatar de forma dinâmica com base no nome
   const getInitials = (text: string) => {
     if (!text) return 'UV';
     const parts = text.trim().split(' ');
@@ -109,11 +110,11 @@ export default function ProfileScreen() {
             </View>
             <View style={styles.contactItem}>
               <Ionicons name="call-outline" size={16} color="#7E9F8E" />
-              {/* <Text style={styles.contactItemText}>{phone}</Text> */}
+              <Text style={styles.contactItemText}>{phone}</Text>
             </View>
             <View style={styles.contactItem}>
               <Ionicons name="location-outline" size={16} color="#7E9F8E" />
-              {/* <Text style={styles.contactItemText}>{city}</Text> */}
+              <Text style={styles.contactItemText}>{city}</Text>
             </View>
           </View>
         </View>
@@ -212,8 +213,8 @@ export default function ProfileScreen() {
                 <Text style={styles.inputLabel}>Telefone</Text>
                 <TextInput
                   style={styles.textInput}
-                  // value={phone}
-                  // onChangeText={setPhone}
+                  value={phone}
+                  onChangeText={setPhone}
                   placeholder="Seu telefone"
                   placeholderTextColor="#7E9F8E"
                   keyboardType="phone-pad"
@@ -224,8 +225,8 @@ export default function ProfileScreen() {
                 <Text style={styles.inputLabel}>Cidade</Text>
                 <TextInput
                   style={styles.textInput}
-                  // value={city}
-                  // onChangeText={setCity}
+                  value={city}
+                  onChangeText={setCity}
                   placeholder="Sua cidade"
                   placeholderTextColor="#7E9F8E"
                 />

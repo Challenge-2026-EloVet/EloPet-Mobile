@@ -6,7 +6,10 @@ export interface User {
   nomeUsuario: string,
   email: string,
   senha: string,
-  tipoUsuario: string
+  tipoUsuario: string,
+  dataNascimento: string,
+  idadeAproximada: number,
+  flagCastrado: number
 }
 
 export interface Pet {

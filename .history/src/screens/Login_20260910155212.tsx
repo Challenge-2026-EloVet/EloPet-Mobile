@@ -18,13 +18,13 @@ import { User } from '../types/interfaces';
 export default function Login() {
   const navigation = useNavigation<any>();
 
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState('')
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [userType, setUserType] = useState('');
+  const [userType, setUserType] = useState('')
   const [activeTab, setActiveTab] = useState(false);
 
-  const handleLogin = async () => {
+ const handleLogin = async () => {
     try {
       if (!username || !password) {
         alert('Preencha o nome de usuário e a senha.'); 
@@ -35,14 +35,12 @@ export default function Login() {
 
       console.log('Login bem-sucedido');
       
-      const user: User = {
-        nomeUsuario: username,
-        email: email || '', 
-        senha: password,
-        tipoUsuario: 'USER',
-      };
+      const user : User {
+        user
+      }
 
-      navigation.navigate('MainTabs', { user }); 
+
+      navigation.navigate('MainTabs', { username }); 
 
     } catch (error: any) {
       alert(error?.message || error || 'Não foi possível conectar ao servidor.');
@@ -56,10 +54,10 @@ export default function Login() {
         return;
       }
 
-      const type = 'USER';
-      setUserType(type);
+      const userType = 'USER';
+      setUserType(userType)
 
-      await registerService(username, email, password, type);
+      await registerService(username, email, password, userType);
 
       console.log('Cadastro realizado com sucesso');
       navigation.navigate('MainTabs');
@@ -116,11 +114,12 @@ export default function Login() {
   const renderLoginForm = () => (
     <View style={styles.formContainer}>
       <View style={styles.inputGroup}>
-        <Text style={styles.label}>Nome de Usuário / E-mail</Text>
+        <Text style={styles.label}>E-mail</Text>
         <TextInput
           style={styles.input}
-          placeholder="seu usuário ou e-mail"
+          placeholder="seu@email.com"
           placeholderTextColor="#A0AEC0"
+          keyboardType="email-address"
           autoCapitalize="none"
           value={username}
           onChangeText={setUsername}
@@ -273,7 +272,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    boxShadow: '0px 4px 8px rgba(24, 90, 67, 0.15)',
+    shadowColor: '#185A43',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
     elevation: 3,
   },
   primaryButtonText: {

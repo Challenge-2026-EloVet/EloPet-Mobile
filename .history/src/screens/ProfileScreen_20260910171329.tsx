@@ -224,8 +224,8 @@ export default function ProfileScreen() {
                 <Text style={styles.inputLabel}>Cidade</Text>
                 <TextInput
                   style={styles.textInput}
-                  // value={city}
-                  // onChangeText={setCity}
+                  value={city}
+                  onChangeText={setCity}
                   placeholder="Sua cidade"
                   placeholderTextColor="#7E9F8E"
                 />

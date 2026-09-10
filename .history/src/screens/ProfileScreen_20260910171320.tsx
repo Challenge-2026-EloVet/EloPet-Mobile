@@ -113,7 +113,7 @@ export default function ProfileScreen() {
             </View>
             <View style={styles.contactItem}>
               <Ionicons name="location-outline" size={16} color="#7E9F8E" />
-              {/* <Text style={styles.contactItemText}>{city}</Text> */}
+              <Text style={styles.contactItemText}>{city}</Text>
             </View>
           </View>
         </View>
@@ -212,8 +212,8 @@ export default function ProfileScreen() {
                 <Text style={styles.inputLabel}>Telefone</Text>
                 <TextInput
                   style={styles.textInput}
-                  // value={phone}
-                  // onChangeText={setPhone}
+                  value={phone}
+                  onChangeText={setPhone}
                   placeholder="Seu telefone"
                   placeholderTextColor="#7E9F8E"
                   keyboardType="phone-pad"
@@ -224,8 +224,8 @@ export default function ProfileScreen() {
                 <Text style={styles.inputLabel}>Cidade</Text>
                 <TextInput
                   style={styles.textInput}
-                  // value={city}
-                  // onChangeText={setCity}
+                  value={city}
+                  onChangeText={setCity}
                   placeholder="Sua cidade"
                   placeholderTextColor="#7E9F8E"
                 />

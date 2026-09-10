@@ -37,7 +37,7 @@ export default function Login() {
       
       const user: User = {
         nomeUsuario: username,
-        email: email || '', 
+        email: email || 'a', 
         senha: password,
         tipoUsuario: 'USER',
       };

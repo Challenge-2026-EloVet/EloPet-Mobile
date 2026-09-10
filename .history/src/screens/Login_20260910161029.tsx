@@ -31,7 +31,7 @@ export default function Login() {
         return;
       }
 
-      await loginService(username, password);
+      await loginService(username, password, email);
 
       console.log('Login bem-sucedido');
       

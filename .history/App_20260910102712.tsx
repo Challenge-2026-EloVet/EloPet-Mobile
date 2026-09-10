@@ -1,5 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
+import { Ionicons } from '@expo/vector-icons';
 import { NavigationContainer } from '@react-navigation/native';
+
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from './src/components/Login';
 import MainTabs from './src/components/MainTabs';

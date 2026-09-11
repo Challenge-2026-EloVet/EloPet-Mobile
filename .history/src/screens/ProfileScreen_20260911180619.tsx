@@ -15,14 +15,13 @@ import { thor } from '../mocks/mockData';
 import { updateUserService } from '../services/eloPetService';
 import { useAuth } from '../context/AuthProvider';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 
 export default function ProfileScreen() {
   const { user, logout } = useAuth();
 
   const userId = user?.id || user?._id || user?.userId || user?.nomeUsuario;
 
-  const navigation = useNavigation<any>()
+  const navigation = useNa
 
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

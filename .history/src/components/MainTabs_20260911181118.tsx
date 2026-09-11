@@ -31,6 +31,9 @@ export default function MainTabs() {
                   route.name === 'Network' ? 'map-outline' :
                     route.name === 'PetForms' ? 'paw-outline' : 'person-outline'
             }
+            size={24}
+            color={color}
+          />
             size={ size }
             color={ color }
         />

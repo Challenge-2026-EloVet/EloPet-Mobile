@@ -28,12 +28,13 @@ export default function MainTabs() {
             name={
               route.name === 'Home' ? 'home-outline' :
                 route.name === 'Chat' ? 'chatbubble-ellipses-outline' :
-                  route.name === 'Network' ? 'map-outline' :
-                    route.name === 'PetForms' ? 'paw-outline' : 'person-outline'
+                  route.name === 'Network' ? 'map-outline' : 'person-outline'
+                  route.name === 'Network' ? 'map-outline' : 'person-outline'
+
             }
-            size={ size }
-            color={ color }
-        />
+            size={size}
+            color={color}
+          />
         ),
       })}
     >

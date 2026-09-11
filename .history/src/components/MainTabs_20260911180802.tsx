@@ -4,7 +4,6 @@ import ChatScreen from '../screens/ChatScreen';
 import ClinicSearchScreen from '../screens/ClinicSearchScreen';
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import RegisterPetScreen from '../screens/RegisterPetScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -28,39 +27,38 @@ export default function MainTabs() {
             name={
               route.name === 'Home' ? 'home-outline' :
                 route.name === 'Chat' ? 'chatbubble-ellipses-outline' :
-                  route.name === 'Network' ? 'map-outline' :
-                    route.name === 'PetForms' ? 'paw-outline' : 'person-outline'
+                  route.name === 'Network' ? 'map-outline' : 'person-outline'
             }
-            size={ size }
-            color={ color }
-        />
+            size={size}
+            color={color}
+          />
         ),
       })}
     >
-      <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{ tabBarLabel: 'Resumo' }}
+      <Tab.Screen 
+        name="Home" 
+        component={HomeScreen} 
+        options={{ tabBarLabel: 'Resumo' }} 
       />
-      <Tab.Screen
-        name="Chat"
-        component={ChatScreen}
-        options={{ tabBarLabel: 'Diário de saúde' }}
+      <Tab.Screen 
+        name="Chat" 
+        component={ChatScreen} 
+        options={{ tabBarLabel: 'Diário de saúde' }} 
       />
-      <Tab.Screen
-        name="Network"
-        component={ClinicSearchScreen}
-        options={{ tabBarLabel: 'Rede credenciada' }}
+      <Tab.Screen 
+        name="Network" 
+        component={ClinicSearchScreen} 
+        options={{ tabBarLabel: 'Rede credenciada' }} 
       />
-      <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{ tabBarLabel: 'Perfil' }}
+      <Tab.Screen 
+        name="Profile" 
+        component={ProfileScreen} 
+        options={{ tabBarLabel: 'Perfil' }} 
       />
-      <Tab.Screen
-        name="PetForms"
-        component={RegisterPetScreen}
-        options={{ tabBarLabel: 'PetForms' }}
+      <Tab.Screen 
+        name="Profile" 
+        component={ProfileScreen} 
+        options={{ tabBarLabel: 'Perfil' }} 
       />
     </Tab.Navigator>
   );

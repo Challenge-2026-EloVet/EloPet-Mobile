@@ -28,39 +28,38 @@ export default function MainTabs() {
             name={
               route.name === 'Home' ? 'home-outline' :
                 route.name === 'Chat' ? 'chatbubble-ellipses-outline' :
-                  route.name === 'Network' ? 'map-outline' :
-                    route.name === 'PetForms' ? 'paw-outline' : 'person-outline'
+                  route.name === 'Network' ? 'map-outline' : 'person-outline'
             }
-            size={ size }
-            color={ color }
-        />
+            size={size}
+            color={color}
+          />
         ),
       })}
     >
-      <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{ tabBarLabel: 'Resumo' }}
+      <Tab.Screen 
+        name="Home" 
+        component={HomeScreen} 
+        options={{ tabBarLabel: 'Resumo' }} 
       />
-      <Tab.Screen
-        name="Chat"
-        component={ChatScreen}
-        options={{ tabBarLabel: 'Diário de saúde' }}
+      <Tab.Screen 
+        name="Chat" 
+        component={ChatScreen} 
+        options={{ tabBarLabel: 'Diário de saúde' }} 
       />
-      <Tab.Screen
-        name="Network"
-        component={ClinicSearchScreen}
-        options={{ tabBarLabel: 'Rede credenciada' }}
+      <Tab.Screen 
+        name="Network" 
+        component={ClinicSearchScreen} 
+        options={{ tabBarLabel: 'Rede credenciada' }} 
       />
-      <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{ tabBarLabel: 'Perfil' }}
+      <Tab.Screen 
+        name="Profile" 
+        component={ProfileScreen} 
+        options={{ tabBarLabel: 'Perfil' }} 
       />
-      <Tab.Screen
-        name="PetForms"
-        component={RegisterPetScreen}
-        options={{ tabBarLabel: 'PetForms' }}
+      <Tab.Screen 
+        name="PetForms" 
+        component={RegisterPetScreen} 
+        options={{ tabBarLabel: 'Perfil' }} 
       />
     </Tab.Navigator>
   );

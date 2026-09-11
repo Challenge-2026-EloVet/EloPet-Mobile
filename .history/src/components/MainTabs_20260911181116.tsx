@@ -25,15 +25,18 @@ export default function MainTabs() {
         tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
         tabBarIcon: ({ color, size }) => (
           <Ionicons
-            name={
-              route.name === 'Home' ? 'home-outline' :
-                route.name === 'Chat' ? 'chatbubble-ellipses-outline' :
-                  route.name === 'Network' ? 'map-outline' :
-                    route.name === 'PetForms' ? 'paw-outline' : 'person-outline'
-            }
-            size={ size }
-            color={ color }
-        />
+  name={
+    route.name === 'Home' ? 'home-outline' :
+    route.name === 'Chat' ? 'chatbubble-ellipses-outline' :
+    route.name === 'Network' ? 'map-outline' :
+    route.name === 'PetForms' ? 'paw-outline' : 'person-outline'
+  }
+  size={24}
+  color={color}
+/>
+            size={size}
+            color={color}
+          />
         ),
       })}
     >

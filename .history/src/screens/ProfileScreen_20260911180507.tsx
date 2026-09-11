@@ -15,14 +15,11 @@ import { thor } from '../mocks/mockData';
 import { updateUserService } from '../services/eloPetService';
 import { useAuth } from '../context/AuthProvider';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 
 export default function ProfileScreen() {
   const { user, logout } = useAuth();
 
   const userId = user?.id || user?._id || user?.userId || user?.nomeUsuario;
-
-  const navigation = useNavigation<any>()
 
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -174,7 +171,7 @@ export default function ProfileScreen() {
               <Text style={styles.sectionTitle}>Meus pets</Text>
               <Text style={styles.sectionSubtitle}>Animais vinculados à sua conta</Text>
             </View>
-            <TouchableOpacity accessibilityLabel="Adicionar pet" activeOpacity={0.75} onPress={() => navigation.navigate('RegisterPetScreen')}>
+            <TouchableOpacity accessibilityLabel="Adicionar pet" activeOpacity={0.75} onPress={() => nav}>
               <Ionicons name="add-circle-outline" size={24} color="#185A43" />
             </TouchableOpacity>
           </View>

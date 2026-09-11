@@ -22,7 +22,7 @@ export default function ProfileScreen() {
 
   const userId = user?.id || user?._id || user?.userId || user?.nomeUsuario;
 
-  const navigation = useNavigation<any>()
+  const navigation = useNavigation<()
 
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

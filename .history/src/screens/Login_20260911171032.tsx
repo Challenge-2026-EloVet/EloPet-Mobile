@@ -47,6 +47,7 @@ export default function Login() {
 
       if (setUser) setUser(user);
       setIsAuthenticated(true); 
+      navigation.navigate
 
     } catch (error: any) {
       alert(error?.message || error || 'Não foi possível conectar ao servidor.');

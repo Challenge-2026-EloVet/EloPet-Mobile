@@ -13,8 +13,7 @@ const Stack = createNativeStackNavigator();
 const queryClient = new QueryClient();
 
 
-// Criei essa função pq o após a autenticação com dentro do Contexto nao tava redirecionando pro app
-// com conflito de navegação
+// Criei essa função pq o 
 function AppNavigator() {
   const { isAuthenticated, isLoading } = useAuth();
 

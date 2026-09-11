@@ -13,7 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { loginService, registerService } from '../services/eloPetService';
 import { User } from '../types/interfaces';
-import { useAuth } from '../context/AuthProvider';
+import { useAuth } from '../context/authContext';
 
 export default function Login() {
   const { setIsAuthenticated, setUser } = useAuth();

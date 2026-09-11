@@ -12,12 +12,11 @@ import MainTabs from './src/components/MainTabs';
 const Stack = createNativeStackNavigator();
 const queryClient = new QueryClient();
 
-
-// Criei essa função pq o após a autenticação com dentro do Contexto nao tava redirecionando pro app
-// com conflito de navegação
+// Componente interno que consome o contexto de autenticação
 function AppNavigator() {
   const { isAuthenticated, isLoading } = useAuth();
 
+  // Exibe um carregamento enquanto verifica se há um token salvo no Storage
   if (isLoading) {
     return (
       <View style={styles.loaderContainer}>
@@ -31,8 +30,10 @@ function AppNavigator() {
       <StatusBar style="dark" />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {isAuthenticated ? (
+          // Se estiver autenticado, exibe as abas principais
           <Stack.Screen name="MainTabs" component={MainTabs} />
         ) : (
+          // Se não, exibe a tela de login
           <Stack.Screen name="Login" component={Login} />
         )}
       </Stack.Navigator>

@@ -13,7 +13,7 @@ import {
 
 import { thor } from '../mocks/mockData';
 import { updateUserService } from '../services/eloPetService';
-import { useAuth } from '../context/AuthProvider';
+import { useAuth } from '../context/authContext';
 
 export default function ProfileScreen() {
   const { user, logout } = useAuth();
@@ -23,6 +23,7 @@ export default function ProfileScreen() {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Inicializa o estado local com os dados vindos diretamente do contexto global
   const [name, setName] = useState(user?.nomeUsuario || user?.nomeCompleto || 'Usuário');
   const [email, setEmail] = useState(user?.email || '');
   const [phone, setPhone] = useState(user?.telefone || '');
@@ -75,7 +76,7 @@ export default function ProfileScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              await logout();
+              await logout(); // Executa a limpeza do token[cite: 3] e atualiza o App.tsx automaticamente
             } catch (error) {
               Alert.alert('Erro', 'Não foi possível sair da conta.');
             }
@@ -318,6 +319,7 @@ export default function ProfileScreen() {
   );
 }
 
+// Estilos mantidos inalterados...
 const styles = StyleSheet.create({
   container: {
     flex: 1,

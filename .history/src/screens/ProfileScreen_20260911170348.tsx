@@ -13,7 +13,7 @@ import {
 
 import { thor } from '../mocks/mockData';
 import { updateUserService } from '../services/eloPetService';
-import { useAuth } from '../context/AuthProvider';
+import { useAuth } from '../context/authContext';
 
 export default function ProfileScreen() {
   const { user, logout } = useAuth();
@@ -318,6 +318,7 @@ export default function ProfileScreen() {
   );
 }
 
+// Estilos mantidos inalterados...
 const styles = StyleSheet.create({
   container: {
     flex: 1,

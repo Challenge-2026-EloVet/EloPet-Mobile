@@ -36,8 +36,6 @@ const storage = {
   }
 };
 
-
-// AQUI É PARA QUE O APP.TSX VERIFIQUE SE O USUARIO JÁ ESTÁ LOGADO OU NAO AO ABRIR O APLICATIVO
 export const getStoredToken = async () => {
   return await storage.getItem(TOKEN_KEY);
 };

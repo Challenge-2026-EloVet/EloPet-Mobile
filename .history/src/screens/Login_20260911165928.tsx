@@ -13,7 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { loginService, registerService } from '../services/eloPetService';
 import { User } from '../types/interfaces';
-import { useAuth } from '../context/AuthProvider';
+import { useAuth } from '../context/authContext';
 
 export default function Login() {
   const { setIsAuthenticated, setUser } = useAuth();
@@ -45,6 +45,7 @@ export default function Login() {
         cidade: ''
       };
 
+      // Atualiza o estado global: salva o usuário e autentica
       if (setUser) setUser(user);
       setIsAuthenticated(true); 
 
@@ -65,6 +66,9 @@ export default function Login() {
 
       await registerService(username, email, password, type);
       
+      // Opcional: Faz o login automático logo após o cadastro para já salvar o token e autenticar
+      await loginService(username, password);
+
       const user: User = {
         nomeUsuario: username,
         email: email,
@@ -78,7 +82,7 @@ export default function Login() {
       console.log('Cadastro realizado com sucesso');
       
       if (setUser) setUser(user);
-      setIsAuthenticated(true);
+      setIsAuthenticated(true); // Atualiza o estado global
 
     } catch (error: any) {
       alert(error?.message || error || 'Erro ao realizar cadastro.');

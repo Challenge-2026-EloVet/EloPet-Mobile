@@ -13,7 +13,7 @@ import {
 
 import { thor } from '../mocks/mockData';
 import { updateUserService } from '../services/eloPetService';
-import { useAuth } from '../context/AuthProvider';
+import { useAuth } from '../context/authContext';
 
 export default function ProfileScreen() {
   const { user, logout } = useAuth();
@@ -75,7 +75,7 @@ export default function ProfileScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              await logout();
+              await logout(); // Executa a limpeza do token[cite: 3] e atualiza o App.tsx automaticamente
             } catch (error) {
               Alert.alert('Erro', 'Não foi possível sair da conta.');
             }
@@ -318,6 +318,7 @@ export default function ProfileScreen() {
   );
 }
 
+// Estilos mantidos inalterados...
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -4,14 +4,13 @@ import * as SecureStore from 'expo-secure-store';
 
 const API_LOGIN_URL = process.env.EXPO_PUBLIC_API_JAVA_USER_LOGIN;
 const API_CREATION_URL = process.env.EXPO_PUBLIC_API_JAVA_USER_CREATION;
-const API_UPDATE_URL = process.env.API_UPDATE_URL
 const API_PETS_URL = process.env.EXPO_PUBLIC_API_JAVA_PET_CRUD;
 
 const TOKEN_KEY = 'user_token';
 
 
 // AQUI TA VALIDANDO O TIPO DE PLATAFORMA USADA NA ARMAZENAGEM DO TOKEN E POSTERIOR ENVIO NA REQUISIÇÃO 
-// TESTE EM WEB PRECISA USAR LOCALSTORAGE
+// TESTE EM WEB USA LOCALSTORAGE
 const storage = {
   async setItem(key, value) {
     if (Platform.OS === 'web') {
@@ -89,18 +88,6 @@ export const registerService = async (nomeUsuario, email, senha, tipoUsuario = '
     throw new Error(error.response?.data?.message || 'Erro ao realizar o cadastro.');
   }
 };
-
-export const updateUserService = async (id, userData) => {
-  try {
-    const config = await getAuthConfig();
-    const response = await axios.put(`${API_UPDATE_URL}/${id}`, userData, config);
-    return response.data;
-  } catch (error) {
-    console.error('Erro no updateUserService:', error);
-    throw new Error(error.response?.data?.message || 'Erro ao atualizar os dados do usuario.');
-  }
-};
-
 
 export const createPetService = async (petData) => {
   try {

@@ -96,8 +96,8 @@ export const updateUserService = async (id, userData) => {
     const response = await axios.put(`${API_UPDATE_URL}/${id}`, userData, config);
     return response.data;
   } catch (error) {
-    console.error('Erro no updateUserService:', error);
-    throw new Error(error.response?.data?.message || 'Erro ao atualizar os dados do usuario.');
+    console.error('Erro no updatePetService:', error);
+    throw new Error(error.response?.data?.message || 'Erro ao atualizar os dados do pet.');
   }
 };
 

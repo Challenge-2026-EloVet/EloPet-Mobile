@@ -15,7 +15,6 @@ export default function HomeScreen() {
     queryKey: ['pets'],
     queryFn: getPetsService,
   });
-
   if (isLoading) {
     return (
       <View style={[styles.center, { backgroundColor: '#e5e8f1' }]}>

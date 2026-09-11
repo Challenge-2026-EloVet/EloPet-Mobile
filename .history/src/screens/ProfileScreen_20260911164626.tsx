@@ -82,7 +82,7 @@ export default function ProfileScreen() {
               await logoutService();
               navigation.reset({
                 index: 0,
-                routes: [{ name: 'Login' }],
+                routes: [{ name: 'Login' }], // Ajuste 'Login' para o nome exato da sua rota de login
               });
             } catch (error) {
               Alert.alert('Erro', 'Não foi possível sair da conta.');
@@ -219,6 +219,7 @@ export default function ProfileScreen() {
             ))}
           </View>
 
+          {/* Botão de Sair da Conta */}
           <TouchableOpacity
             activeOpacity={0.75}
             style={styles.logoutButton}

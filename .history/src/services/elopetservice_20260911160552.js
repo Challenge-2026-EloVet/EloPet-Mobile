@@ -97,7 +97,7 @@ export const updateUserService = async (id, userData) => {
     return response.data;
   } catch (error) {
     console.error('Erro no updateUserService:', error);
-    throw new Error(error.response?.data?.message || 'Erro ao atualizar os dados do usuario.');
+    throw new Error(error.response?.data?.message || 'Erro ao atualizar os dados do pet.');
   }
 };
 

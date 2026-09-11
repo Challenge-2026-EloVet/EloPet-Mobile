@@ -13,11 +13,20 @@ import {
 
 import { thor } from '../mocks/mockData';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import { logoutService, updateUserService } from '../services/eloPetService';
+import { User } from '../types/interfaces';
+import { updateUserService } from '../services/eloPetService';
 
+// Serviço de logout (pode ser mantido aqui ou importado do seu arquivo de services)
+const handleLogout = async () => {
+  try {
+    await storage.removeItem(TOKEN_KEY);
+  } catch (error) {
+    console.error('Erro ao remover o token:', error);
+    throw error;
+  }
+};
 
 export default function ProfileScreen() {
- 
   const route = useRoute<any>();
   const navigation = useNavigation<any>();
   const userFromParams: any = route.params?.user || {};
@@ -80,9 +89,10 @@ export default function ProfileScreen() {
           onPress: async () => {
             try {
               await logoutService();
+              // Redireciona para a tela de Login e limpa o histórico de navegação
               navigation.reset({
                 index: 0,
-                routes: [{ name: 'Login' }],
+                routes: [{ name: 'Login' }], // Ajuste 'Login' para o nome exato da sua rota de login
               });
             } catch (error) {
               Alert.alert('Erro', 'Não foi possível sair da conta.');
@@ -219,6 +229,7 @@ export default function ProfileScreen() {
             ))}
           </View>
 
+          {/* Botão de Sair da Conta */}
           <TouchableOpacity
             activeOpacity={0.75}
             style={styles.logoutButton}

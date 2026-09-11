@@ -16,23 +16,23 @@ export default function HomeScreen() {
     queryFn: getPetsService,
   });
 
+  const currentPet = pets && pets.length > 0 ? pets[0] : null;
+
   if (isLoading) {
     return (
-      <View style={[styles.center, { backgroundColor: '#e5e8f1' }]}>
-        <ActivityIndicator size="large" color="#185A43" />
+      <View style={[styles.center, { backgroundColor: '#070a13' }]}>
+        <ActivityIndicator size="large" color="#1fb6ff" />
       </View>
     );
   }
 
   if (isError) {
     return (
-      <View style={[styles.center, { backgroundColor: '#e5e8f1' }]}>
+      <View style={[styles.center, { backgroundColor: '#070a13' }]}>
         <Text style={styles.errorText}>Erro ao carregar os dados do Pet!!</Text>
       </View>
     )
   }
-
-  const currentPet = pets && pets.length > 0 ? pets[0] : null;
 
   return (
     <View style={styles.container}>

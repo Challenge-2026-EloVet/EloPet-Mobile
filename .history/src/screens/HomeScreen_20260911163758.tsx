@@ -11,28 +11,28 @@ import { useQuery } from '@tanstack/react-query';
 
 export default function HomeScreen() {
 
-  const { data: pets, isLoading, isError } = useQuery({
-    queryKey: ['pets'],
+  const { data: pets, isLoading,isError } = useQuery({
+    queryKey: ['pets'], 
     queryFn: getPetsService,
   });
 
-  if (isLoading) {
-    return (
-      <View style={[styles.center, { backgroundColor: '#e5e8f1' }]}>
-        <ActivityIndicator size="large" color="#185A43" />
-      </View>
-    );
-  }
-
-  if (isError) {
-    return (
-      <View style={[styles.center, { backgroundColor: '#e5e8f1' }]}>
-        <Text style={styles.errorText}>Erro ao carregar os dados do Pet!!</Text>
-      </View>
-    )
-  }
-
   const currentPet = pets && pets.length > 0 ? pets[0] : null;
+
+  if (isLoading) {
+        return (
+            <View style={[styles.center, { backgroundColor: '#070a13' }]}>
+                <ActivityIndicator size="large" color="#1fb6ff" />
+            </View>
+        );
+    }
+
+    if (isError) {
+        return (
+            <View style={[styles.center, { backgroundColor: '#070a13' }]}>
+                <Text style={styles.errorText}>Erro ao carregar as Rectennas!!</Text>
+            </View>
+        )
+
 
   return (
     <View style={styles.container}>
@@ -94,14 +94,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
   },
-  center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorText: {
-    color: '#ff4a5a',
-    fontSize: 16,
-    fontWeight: '600',
-  }
+   center: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    errorText: {
+        color: '#ff4a5a',
+        fontSize: 16,
+        fontWeight: '600',
+    }
 });

@@ -219,6 +219,7 @@ export default function ProfileScreen() {
             ))}
           </View>
 
+          {/* Botão de Sair da Conta */}
           <TouchableOpacity
             activeOpacity={0.75}
             style={styles.logoutButton}

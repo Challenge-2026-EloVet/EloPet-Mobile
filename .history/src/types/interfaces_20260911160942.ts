@@ -3,9 +3,7 @@ import type { Ionicons } from '@expo/vector-icons';
 export type IconName = keyof typeof Ionicons.glyphMap;
 
 export interface User {
-  nomeCompleto: string,
-  telefone: string,
-  cidade: string,
+  
   nomeUsuario: string,
   email: string,
   senha: string,

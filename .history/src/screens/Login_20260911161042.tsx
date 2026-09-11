@@ -69,9 +69,6 @@ export default function Login() {
         email: email,
         senha: password,
         tipoUsuario: type,
-        nomeCompleto: '',
-        telefone: '',
-        cidade: ''
       };
 
       console.log('Cadastro realizado com sucesso');

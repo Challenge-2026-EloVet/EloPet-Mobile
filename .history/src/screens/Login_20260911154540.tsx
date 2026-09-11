@@ -27,25 +27,22 @@ export default function Login() {
   const handleLogin = async () => {
     try {
       if (!username || !password) {
-        alert('Preencha o nome de usuário e a senha.');
+        alert('Preencha o nome de usuário e a senha.'); 
         return;
       }
 
       await loginService(username, password);
 
       console.log('Login bem-sucedido');
-
+      
       const user: User = {
         nomeUsuario: username,
-        email: email || '',
-        senha: '',
+        email: email || '', 
+        senha: password,
         tipoUsuario: 'USER',
-        nomeCompleto: '',
-        telefone: '',
-        cidade: ''
       };
 
-      navigation.navigate('MainTabs', { user });
+      navigation.navigate('MainTabs', { user }); 
 
     } catch (error: any) {
       alert(error?.message || error || 'Não foi possível conectar ao servidor.');
@@ -65,17 +62,14 @@ export default function Login() {
       await registerService(username, email, password, type);
 
       const user: User = {
-        nomeUsuario: username,
-        email: email,
-        senha: password,
-        tipoUsuario: type,
-        nomeCompleto: '',
-        telefone: '',
-        cidade: ''
-      };
+      nomeUsuario: username,
+      email: email,
+      senha: password,
+      tipoUsuario: type,
+    };
 
       console.log('Cadastro realizado com sucesso');
-      navigation.navigate('MainTabs', {user});
+      navigation.navigate('MainTabs');
 
     } catch (error: any) {
       alert(error?.message || error || 'Erro ao realizar cadastro.');

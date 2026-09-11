@@ -16,6 +16,7 @@ export default function HomeScreen() {
     queryFn: getPetsService,
   });
 
+
   if (isLoading) {
     return (
       <View style={[styles.center, { backgroundColor: '#e5e8f1' }]}>
@@ -31,8 +32,6 @@ export default function HomeScreen() {
       </View>
     )
   }
-
-  const currentPet = pets && pets.length > 0 ? pets[0] : null;
 
   return (
     <View style={styles.container}>

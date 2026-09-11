@@ -12,14 +12,12 @@ import {
 } from 'react-native';
 
 import { thor } from '../mocks/mockData';
-import { useRoute, useNavigation } from '@react-navigation/native';
-import { logoutService, updateUserService } from '../services/eloPetService';
-
+import { useRoute } from '@react-navigation/native';
+import { User } from '../types/interfaces';
+import { updateUserService } from '../services/eloPetService'
 
 export default function ProfileScreen() {
- 
   const route = useRoute<any>();
-  const navigation = useNavigation<any>();
   const userFromParams: any = route.params?.user || {};
 
   const userId = userFromParams.id || userFromParams._id || userFromParams.userId;
@@ -29,8 +27,8 @@ export default function ProfileScreen() {
 
   const [name, setName] = useState(userFromParams.nomeUsuario || userFromParams.nomeCompleto || 'Usuário');
   const [email, setEmail] = useState(userFromParams.email || '');
-  const [phone, setPhone] = useState(userFromParams.telefone || '');
-  const [city, setCity] = useState(userFromParams.cidade || '');
+  const [phone, setPhone] = useState(userFromParams.telefone'');
+  const [city, setCity] = useState(userFromParams.cidade || userFromParams.city || '');
 
   const getInitials = (text: string) => {
     if (!text) return 'UV';
@@ -44,53 +42,28 @@ export default function ProfileScreen() {
   const userInitials = getInitials(name);
 
   const profileActions = [
-    {
-      label: 'Dados pessoais',
-      detail: 'Nome, e-mail e telefone',
-      icon: 'person-outline' as const,
-      onPress: () => setIsEditing(true)
+    { 
+      label: 'Dados pessoais', 
+      detail: 'Nome, e-mail e telefone', 
+      icon: 'person-outline' as const, 
+      onPress: () => setIsEditing(true) 
     },
-    {
-      label: 'Notificações',
-      detail: 'Alertas de saúde e lembretes',
-      icon: 'notifications-outline' as const,
-      onPress: () => showActionFeedback('Notificações')
+    { 
+      label: 'Notificações', 
+      detail: 'Alertas de saúde e lembretes', 
+      icon: 'notifications-outline' as const, 
+      onPress: () => showActionFeedback('Notificações') 
     },
-    {
-      label: 'Privacidade e segurança',
-      detail: 'Controle dos seus dados',
-      icon: 'shield-checkmark-outline' as const,
-      onPress: () => showActionFeedback('Privacidade e segurança')
+    { 
+      label: 'Privacidade e segurança', 
+      detail: 'Controle dos seus dados', 
+      icon: 'shield-checkmark-outline' as const, 
+      onPress: () => showActionFeedback('Privacidade e segurança') 
     },
   ];
 
   const showActionFeedback = (label: string) => {
     Alert.alert(label, 'Esta área estará disponível em breve.');
-  };
-
-  const handleLogout = () => {
-    Alert.alert(
-      'Sair da conta',
-      'Deseja realmente encerrar sua sessão?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Sair',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await logoutService();
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Login' }],
-              });
-            } catch (error) {
-              Alert.alert('Erro', 'Não foi possível sair da conta.');
-            }
-          },
-        },
-      ]
-    );
   };
 
   const handleSave = async () => {
@@ -102,6 +75,7 @@ export default function ProfileScreen() {
     try {
       setIsLoading(true);
 
+      // Payload compatível com a interface do usuário
       const updatedData = {
         nomeUsuario: name,
         email: email,
@@ -218,24 +192,10 @@ export default function ProfileScreen() {
               </TouchableOpacity>
             ))}
           </View>
-
-          <TouchableOpacity
-            activeOpacity={0.75}
-            style={styles.logoutButton}
-            onPress={handleLogout}
-          >
-            <View style={styles.logoutIconWrapper}>
-              <Ionicons name="log-out-outline" size={19} color="#D9534F" />
-            </View>
-            <View style={styles.preferenceTextInfo}>
-              <Text style={styles.logoutLabel}>Sair da conta</Text>
-              <Text style={styles.logoutDetail}>Encerrar sessão atual</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={18} color="#D9534F" />
-          </TouchableOpacity>
         </View>
       </ScrollView>
 
+      {/* Modal de Formulário de Edição */}
       <Modal
         visible={isEditing}
         animationType="fade"
@@ -549,37 +509,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontSize: 12,
     color: '#7E9F8E',
-  },
-  logoutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: 'rgba(217, 83, 79, 0.25)',
-    backgroundColor: '#FFFFFF',
-    marginTop: 16,
-    boxShadow: '0px 2px 4px rgba(217, 83, 79, 0.05)',
-    elevation: 2,
-  },
-  logoutIconWrapper: {
-    height: 40,
-    width: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 12,
-    backgroundColor: 'rgba(217, 83, 79, 0.1)',
-  },
-  logoutLabel: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#D9534F',
-  },
-  logoutDetail: {
-    marginTop: 4,
-    fontSize: 12,
-    color: '#D9534F',
-    opacity: 0.8,
   },
   modalOverlay: {
     flex: 1,

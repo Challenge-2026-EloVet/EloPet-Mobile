@@ -40,9 +40,6 @@ export default function Login() {
         email: email || '',
         senha: '',
         tipoUsuario: 'USER',
-        nomeCompleto: '',
-        telefone: '',
-        cidade: ''
       };
 
       navigation.navigate('MainTabs', { user });
@@ -69,9 +66,6 @@ export default function Login() {
         email: email,
         senha: password,
         tipoUsuario: type,
-        nomeCompleto: '',
-        telefone: '',
-        cidade: ''
       };
 
       console.log('Cadastro realizado com sucesso');

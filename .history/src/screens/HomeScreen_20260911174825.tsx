@@ -8,7 +8,6 @@ import { careTasks, quickStats, thor } from '../mocks/mockData';
 import { useState, useEffect } from 'react';
 import { getPetsService } from '../services/eloPetService';
 import { useQuery } from '@tanstack/react-query';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
 
@@ -36,7 +35,7 @@ export default function HomeScreen() {
   const currentPet = pets && pets.length > 0 ? pets[0] : null;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaV style={styles.container}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -58,7 +57,7 @@ export default function HomeScreen() {
         </View>
         <TodoListCuidados tasks={careTasks} />
       </ScrollView>
-    </SafeAreaView>
+    </SafeAreaV>
   );
 }
 

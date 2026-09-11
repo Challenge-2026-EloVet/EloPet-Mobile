@@ -5,7 +5,6 @@ import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 
 import ClinicCard from '../components/ClinicCard';
 import { partnerClinics } from '../mocks/mockData';
 import type { Clinic } from '../types/interfaces';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const filters = ['Ortopedia', 'Cardiologia', 'Até 5km', 'Acessibilidade'];
 
@@ -35,7 +34,7 @@ export default function ClinicSearchScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.headerContainer}>
           <View style={styles.headerTopRow}>
@@ -131,7 +130,7 @@ export default function ClinicSearchScreen() {
           <Ionicons name="checkmark-circle" size={18} color="#A3D9C9" />
         </View>
       ) : null}
-    </SafeAreaView>
+    </View>
   );
 }
 

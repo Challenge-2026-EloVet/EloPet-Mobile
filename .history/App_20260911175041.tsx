@@ -1,10 +1,11 @@
-import { StatusBar } from 'react-native';
+import React from 'react';
+import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import { AuthProvider, useAuth } from './src/context/AuthProvider';
+import { AuthProvider, useAuth } from './src/context/';
 import Login from './src/screens/Login';
 import MainTabs from './src/components/MainTabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -28,11 +29,7 @@ function AppNavigator() {
 
   return (
     <NavigationContainer>
-      <StatusBar
-        barStyle="dark-content"
-        backgroundColor="transparent"
-        translucent={true}
-      />
+      <StatusBar style="dark" />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {isAuthenticated ? (
           <Stack.Screen name="MainTabs" component={MainTabs} />

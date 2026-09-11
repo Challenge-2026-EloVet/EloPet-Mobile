@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 type Message = {
   id: string;
@@ -61,7 +60,7 @@ export default function ChatScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.headerContainer}>
         <View style={styles.headerRow}>
           <View style={styles.avatarContainer}>
@@ -160,7 +159,7 @@ export default function ChatScreen() {
           ))}
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 

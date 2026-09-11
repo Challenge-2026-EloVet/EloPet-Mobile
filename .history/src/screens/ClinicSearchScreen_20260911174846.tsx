@@ -5,7 +5,6 @@ import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 
 import ClinicCard from '../components/ClinicCard';
 import { partnerClinics } from '../mocks/mockData';
 import type { Clinic } from '../types/interfaces';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const filters = ['Ortopedia', 'Cardiologia', 'Até 5km', 'Acessibilidade'];
 

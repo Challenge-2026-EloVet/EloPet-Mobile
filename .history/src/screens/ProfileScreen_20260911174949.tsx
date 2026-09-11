@@ -13,7 +13,7 @@ import {
 
 import { thor } from '../mocks/mockData';
 import { updateUserService } from '../services/eloPetService';
-import { useAuth } from '../context/AuthProvider';
+import { useAuth } from '../context/AuthContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ProfileScreen() {

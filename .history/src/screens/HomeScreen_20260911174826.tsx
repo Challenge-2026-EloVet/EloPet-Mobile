@@ -8,7 +8,6 @@ import { careTasks, quickStats, thor } from '../mocks/mockData';
 import { useState, useEffect } from 'react';
 import { getPetsService } from '../services/eloPetService';
 import { useQuery } from '@tanstack/react-query';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
 

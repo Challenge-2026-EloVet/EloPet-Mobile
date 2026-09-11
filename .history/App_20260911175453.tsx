@@ -1,4 +1,4 @@
-import { StatusBar } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
@@ -29,9 +29,7 @@ function AppNavigator() {
   return (
     <NavigationContainer>
       <StatusBar
-        barStyle="dark-content"
-        backgroundColor="transparent"
-        translucent={true}
+        backgroundColor="dark"
       />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {isAuthenticated ? (

@@ -20,6 +20,7 @@ export default function MainTabs() {
           height: 68,
           paddingBottom: 10,
           paddingTop: 8,
+          paddingHorizontal: 12,
         },
         tabBarLabelStyle: { fontSize: 10, fontWeight: '600' },
         tabBarIcon: ({ color, size }) => (

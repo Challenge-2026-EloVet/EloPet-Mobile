@@ -18,10 +18,10 @@ export default function MainTabs() {
           backgroundColor: '#FFFFFF',
           borderTopColor: '#A3D9C9',
           height: 68,
-          paddingBottom: 10,
+          paddingBottom: 8,
           paddingTop: 8,
         },
-        tabBarLabelStyle: { fontSize: 10, fontWeight: '600' },
+        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
         tabBarIcon: ({ color, size }) => (
           <Ionicons
             name={

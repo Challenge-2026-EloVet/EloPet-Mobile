@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Pet } from '../types/interfaces';
 
 type Message = {
   id: string;
@@ -27,7 +28,7 @@ function getAssistantReply(reply: string) {
   }
 
   if (reply === quickReplies[1]) {
-    return `Obrigada por me contar. Registrei a redução do apetite. Ofereça água e observe o pet. Caso ele recusar a próxima refeição, avise a clínica. 💚`;
+    return `Obrigada por me contar. Registrei a redução do apetite. Ofereça água e observe o pet. Caso ele se ele recusar a próxima refeição, avise a clínica. 💚`;
   }
 
   return 'Sinto muito que ele pareça desconfortável. Registrei esse sinal de atenção. Evite saltos e, se a dor persistir ou piorar, fale com a VetLife. 🩺';

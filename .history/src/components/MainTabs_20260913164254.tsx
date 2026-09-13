@@ -21,7 +21,7 @@ export default function MainTabs() {
           paddingBottom: 10,
           paddingTop: 8,
         },
-        tabBarLabelStyle: { fontSize: 10, fontWeight: '600' },
+        tabBarLabelStyle: { fontSize: 11, fontWeight: '600' },
         tabBarIcon: ({ color, size }) => (
           <Ionicons
             name={

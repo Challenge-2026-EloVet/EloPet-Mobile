@@ -78,10 +78,10 @@ export default function HomeScreen() {
     );
   }
 
-  return (
-    <SafeAreaView style={styles.container}>
-      {!pets || pets.length === 0 ? (
-        // 1 - Cenário sem nenhum pet cadastrado
+  // 1 - Cenário sem nenhum pet cadastrado
+  if (!pets || pets.length === 0) {
+    return (
+      <SafeAreaView style={styles.container}>
         <View style={styles.emptyStateContainer}>
           <View style={styles.emptyIconWrapper}>
             <MaterialCommunityIcons name="paw-off" size={48} color="#185A43" />
@@ -98,69 +98,64 @@ export default function HomeScreen() {
             <Text style={styles.primaryButtonText}>Ir para o Perfil / Cadastrar Pet</Text>
           </TouchableOpacity>
         </View>
-      ) : (
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.petSelectorContainer}>
-            <View style={styles.selectorHeaderRow}>
-              <View>
-                <Text style={styles.selectorTitle}>Meus Pets</Text>
-              </View>
-            </View>
+      </SafeAreaView>
+    );
+  }
 
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.petSelectorScroll}
-            >
-              {pets.map((pet: any) => {
-                const isSelected = selectedPet?.idPet === pet?.idPet;
-                const isCachorro = pet?.especie?.toLowerCase() === 'cachorro' || pet?.especie?.toLowerCase() === 'dog';
-                return (
-                  <TouchableOpacity
-                    key={pet?.idPet}
-                    style={[styles.petChip, isSelected && styles.petChipSelected]}
-                    onPress={() => setSelectedPet(pet)}
-                    activeOpacity={0.75}
-                  >
-                    <View style={[styles.chipIconWrapper, isSelected && styles.chipIconWrapperSelected]}>
-                      <MaterialCommunityIcons
-                        name={isCachorro ? 'dog' : 'cat'}
-                        size={16}
-                        color="#185A43"
-                      />
-                    </View>
-                    <Text style={[styles.petChipText, isSelected && styles.petChipTextSelected]}>
-                      {pet?.nome || 'Pet'}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
+  // 2 - Cenário com pets cadastrados
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Seletor de Pets */}
+        <View style={styles.petSelectorContainer}>
+          <Text>Meus Pets</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.petSelectorScroll}>
+            {pets.map((pet: any) => {
+              const isSelected = selectedPet?.idPet === pet?.idPet;
+              const isCachorro = pet?.especie?.toLowerCase() === 'cachorro' || pet?.especie?.toLowerCase() === 'dog';
+              return (
+                <TouchableOpacity
+                  key={pet?.idPet}
+                  style={[styles.petChip, isSelected && styles.petChipSelected]}
+                  onPress={() => setSelectedPet(pet)}
+                  activeOpacity={0.75}
+                >
+                  <MaterialCommunityIcons
+                    name={isCachorro ? 'dog' : 'cat'}
+                    size={18}
+                    color={isSelected ? '#FFFFFF' : '#185A43'}
+                  />
+                  <Text style={[styles.petChipText, isSelected && styles.petChipTextSelected]}>
+                    {pet?.nome || 'Pet'}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
+
+        <Header pet={selectedPet} />
+        <RiskScoreCard pet={selectedPet} />
+
+        <View style={styles.sectionHeaderContainer}>
+          <View>
+            <Text style={styles.sectionTitle}>Resumo de saúde</Text>
+            <Text style={styles.sectionSubtitle}>Os dados mais importantes</Text>
           </View>
+        </View>
 
-          <Header pet={selectedPet} />
-          <RiskScoreCard pet={selectedPet} />
+        <View style={styles.statsContainer}>
+          {quickStats.map((stat) => (
+            <StatCard key={stat.label} stat={stat} />
+          ))}
+        </View>
 
-          <View style={styles.sectionHeaderContainer}>
-            <View>
-              <Text style={styles.sectionTitle}>Resumo de saúde</Text>
-              <Text style={styles.sectionSubtitle}>Os dados mais importantes</Text>
-            </View>
-          </View>
-
-          <View style={styles.statsContainer}>
-            {quickStats.map((stat) => (
-              <StatCard key={stat.label} stat={stat} />
-            ))}
-          </View>
-
-          <TodoListCuidados tasks={careTasks} />
-        </ScrollView>
-      )}
+        <TodoListCuidados tasks={careTasks} />
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -177,75 +172,35 @@ const styles = StyleSheet.create({
     paddingBottom: 48,
   },
   petSelectorContainer: {
-    marginTop: 12,
-    marginBottom: 8,
-  },
-  selectorHeaderRow: {
-    paddingHorizontal: 20,
-    marginBottom: 12,
-  },
-  selectorTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#185A43',
-  },
-  selectorSubtitle: {
-    fontSize: 13,
-    color: '#7E9F8E',
-    marginTop: 2,
-  },
-  highlightPetName: {
-    fontWeight: 'bold',
-    color: '#185A43',
+    marginVertical: 12,
   },
   petSelectorScroll: {
     paddingHorizontal: 20,
-    gap: 12,
+    gap: 10,
     alignItems: 'center',
-    paddingVertical: 4,
   },
   petChip: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
     backgroundColor: '#FFFFFF',
-    paddingLeft: 6,
-    paddingRight: 16,
-    paddingVertical: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: 'rgba(126, 159, 142, 0.25)',
-    shadowColor: '#185A43',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 3,
-    elevation: 2,
+    borderColor: 'rgba(126, 159, 142, 0.3)',
   },
   petChipSelected: {
     backgroundColor: '#185A43',
     borderColor: '#185A43',
-    shadowOpacity: 0.12,
-    elevation: 3,
-  },
-  chipIconWrapper: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: 'rgba(163, 217, 201, 0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  chipIconWrapperSelected: {
-    backgroundColor: '#A3D9C9',
   },
   petChipText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: 'bold',
     color: '#185A43',
   },
   petChipTextSelected: {
     color: '#FFFFFF',
-    fontWeight: 'bold',
   },
   sectionHeaderContainer: {
     marginHorizontal: 20,

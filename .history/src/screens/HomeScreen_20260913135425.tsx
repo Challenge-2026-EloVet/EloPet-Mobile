@@ -99,15 +99,20 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
       ) : (
+        // 2 - Cenário com pets cadastrados
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
+          {/* Seletor de Pets Harmonioso */}
           <View style={styles.petSelectorContainer}>
             <View style={styles.selectorHeaderRow}>
               <View>
                 <Text style={styles.selectorTitle}>Meus Pets</Text>
+                <Text style={styles.selectorSubtitle}>
+                  Olá, tutor do <Text style={styles.highlightPetName}>{selectedPet?.nome || 'Pet'}</Text>
+                </Text>
               </View>
             </View>
 

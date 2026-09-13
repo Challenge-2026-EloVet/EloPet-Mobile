@@ -1,4 +1,4 @@
-import type { Clinic, QuickStat, TodoItem } from '../types/interfaces';
+import type { Clinic, Pet, QuickStat, Responsible, TodoItem } from '../types/interfaces';
 
 
 export const quickStats: QuickStat[] = [

@@ -16,7 +16,7 @@ export const careTasks: TodoItem[] = [
   },
   {
     id: 'sofa',
-    label: 'Evitar que o {pet?.nome} suba no sofá hoje',
+    label: 'Evitar que o pet suba no sofá hoje',
     category: 'preventive',
     icon: 'paw-outline',
   },

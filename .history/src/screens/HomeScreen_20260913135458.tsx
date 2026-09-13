@@ -108,6 +108,9 @@ export default function HomeScreen() {
             <View style={styles.selectorHeaderRow}>
               <View>
                 <Text style={styles.selectorTitle}>Meus Pets</Text>
+                <Text style={styles.selectorSubtitle}>
+                  Olá, tutor do <Text style={styles.highlightPetName}>{selectedPet?.nome || 'Pet'}</Text>
+                </Text>
               </View>
             </View>
 

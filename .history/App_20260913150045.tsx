@@ -36,7 +36,7 @@ function AppNavigator() {
         {isAuthenticated ? (
           <>
             <Stack.Screen name="MainTabs" component={MainTabs} />
-            <Stack.Screen name="RegisterPetScreen" component={RegisterPetScreen} />
+            <Stack.Screen name="PetForms" component={RegisterPetScreen} />
           </>
         ) : (
           <Stack.Screen name="Login" component={Login} />

@@ -2,15 +2,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import type { TodoItem } from '../types/interfaces';
+import type { Pet, TodoItem } from '../types/interfaces';
 
 type TaskRowProps = {
   task: TodoItem;
   completed: boolean;
   onToggle: () => void;
+  pet: Pet;
 };
 
-function TaskRow({ task, completed, onToggle }: TaskRowProps) {
+function TaskRow({ task, completed, onToggle, pet }: TaskRowProps) {
   return (
     <TouchableOpacity
       accessibilityRole="checkbox"
@@ -91,10 +92,10 @@ function TaskSection({
 
 export default function TodoList({ tasks }: { tasks: TodoItem[] }) {
   const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
-  
+
   const toggleTask = (taskId: string) =>
     setCompletedTasks((current) => ({ ...current, [taskId]: !current[taskId] }));
-    
+
   const clinical = tasks.filter((task) => task.category === 'clinical');
   const preventive = tasks.filter((task) => task.category === 'preventive');
   const completedCount = Object.values(completedTasks).filter(Boolean).length;
@@ -104,7 +105,7 @@ export default function TodoList({ tasks }: { tasks: TodoItem[] }) {
       <View style={styles.listHeader}>
         <View>
           <Text style={styles.listTitle}>Cuidados de hoje</Text>
-          <Text style={styles.listSubtitle}>Pequenos cuidados, grandes resultados </Text>
+          <Text style={styles.listSubtitle}>Pequenos cuidados, mais saúde para o Thor</Text>
         </View>
         <View style={styles.counterBadge}>
           <Text style={styles.counterText}>
@@ -112,7 +113,7 @@ export default function TodoList({ tasks }: { tasks: TodoItem[] }) {
           </Text>
         </View>
       </View>
-      
+
       <TaskSection
         title="💊 Tratamento Prescrito"
         icon="medkit-outline"
@@ -209,7 +210,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(126, 159, 142, 0.25)',
     backgroundColor: '#FFFFFF',
   },
-  
+
   iconWrapperBase: {
     marginRight: 12,
     height: 40,
@@ -224,7 +225,7 @@ const styles = StyleSheet.create({
   iconWrapperPending: {
     backgroundColor: 'rgba(163, 217, 201, 0.45)',
   },
-  
+
   taskTextBase: {
     flex: 1,
     paddingRight: 12,
@@ -240,7 +241,7 @@ const styles = StyleSheet.create({
   taskTextPending: {
     color: '#185A43',
   },
-  
+
   checkboxBase: {
     height: 24,
     width: 24,

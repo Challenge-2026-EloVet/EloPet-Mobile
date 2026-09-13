@@ -13,7 +13,6 @@ import RegisterPetScreen from './src/screens/RegisterPetScreen';
 const Stack = createNativeStackNavigator();
 const queryClient = new QueryClient();
 
-//Criei essa função pq o após a autenticação dentro do Contexto nao tava redirecionando pro app
 function AppNavigator() {
   const { isAuthenticated, isLoading } = useAuth();
 
@@ -36,7 +35,7 @@ function AppNavigator() {
         {isAuthenticated ? (
           <>
             <Stack.Screen name="MainTabs" component={MainTabs} />
-            <Stack.Screen name="RegisterPetScreen" component={RegisterPetScreen} />
+            <Stack.Screen name="PetForms" component={RegisterPetScreen} />
           </>
         ) : (
           <Stack.Screen name="Login" component={Login} />

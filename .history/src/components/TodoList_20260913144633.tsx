@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import type { TodoItem } from '../types/interfaces';
+import type { Pet, TodoItem } from '../types/interfaces';
 
 type TaskRowProps = {
   task: TodoItem;
@@ -29,7 +29,7 @@ function TaskRow({ task, completed, onToggle }: TaskRowProps) {
         ]}
       >
         <Ionicons
-          name={task.icon as keyof typeof Ionicons.glyphMap}
+          name={(task?.icon as keyof typeof Ionicons.glyphMap) || 'checkbox-outline'}
           size={20}
           color={completed ? '#A3D9C9' : '#185A43'}
         />
@@ -40,7 +40,7 @@ function TaskRow({ task, completed, onToggle }: TaskRowProps) {
           completed ? styles.taskTextCompleted : styles.taskTextPending,
         ]}
       >
-        {task.label}
+        {task?.label || 'Tarefa sem descrição'}
       </Text>
       <View
         style={[
@@ -69,6 +69,8 @@ function TaskSection({
   completedTasks: Record<string, boolean>;
   onToggle: (taskId: string) => void;
 }) {
+  if (!tasks || tasks.length === 0) return null;
+
   return (
     <View style={styles.sectionContainer}>
       <View style={styles.sectionHeader}>
@@ -89,14 +91,15 @@ function TaskSection({
   );
 }
 
-export default function TodoList({ tasks }: { tasks: TodoItem[] }) {
+export default function TodoList({ tasks = [], pet }: { tasks?: TodoItem[]; pet?: Pet }) {
   const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
-  
+
   const toggleTask = (taskId: string) =>
     setCompletedTasks((current) => ({ ...current, [taskId]: !current[taskId] }));
-    
-  const clinical = tasks.filter((task) => task.category === 'clinical');
-  const preventive = tasks.filter((task) => task.category === 'preventive');
+
+  const taskList = Array.isArray(tasks) ? tasks : [];
+  const clinical = taskList.filter((task) => task.category === 'clinical');
+  const preventive = taskList.filter((task) => task.category === 'preventive');
   const completedCount = Object.values(completedTasks).filter(Boolean).length;
 
   return (
@@ -104,15 +107,17 @@ export default function TodoList({ tasks }: { tasks: TodoItem[] }) {
       <View style={styles.listHeader}>
         <View>
           <Text style={styles.listTitle}>Cuidados de hoje</Text>
-          <Text style={styles.listSubtitle}>Pequenos cuidados, grandes resultados </Text>
+          <Text style={styles.listSubtitle}>
+            Pequenos cuidados, mais saúde para o {pet?.nome || 'seu pet'}
+          </Text>
         </View>
         <View style={styles.counterBadge}>
           <Text style={styles.counterText}>
-            {completedCount}/{tasks.length}
+            {completedCount}/{taskList.length}
           </Text>
         </View>
       </View>
-      
+
       <TaskSection
         title="💊 Tratamento Prescrito"
         icon="medkit-outline"
@@ -132,7 +137,6 @@ export default function TodoList({ tasks }: { tasks: TodoItem[] }) {
 }
 
 const styles = StyleSheet.create({
-  // TodoListCuidados Styles
   listContainer: {
     marginHorizontal: 20,
     marginTop: 36,
@@ -168,7 +172,6 @@ const styles = StyleSheet.create({
     color: '#A3D9C9',
   },
 
-  // TaskSection Styles
   sectionContainer: {
     marginBottom: 20,
   },
@@ -192,7 +195,6 @@ const styles = StyleSheet.create({
     color: '#185A43',
   },
 
-  // TaskRow Styles
   taskRowBase: {
     marginBottom: 12,
     flexDirection: 'row',
@@ -209,7 +211,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(126, 159, 142, 0.25)',
     backgroundColor: '#FFFFFF',
   },
-  
+
   iconWrapperBase: {
     marginRight: 12,
     height: 40,
@@ -224,7 +226,7 @@ const styles = StyleSheet.create({
   iconWrapperPending: {
     backgroundColor: 'rgba(163, 217, 201, 0.45)',
   },
-  
+
   taskTextBase: {
     flex: 1,
     paddingRight: 12,
@@ -240,7 +242,7 @@ const styles = StyleSheet.create({
   taskTextPending: {
     color: '#185A43',
   },
-  
+
   checkboxBase: {
     height: 24,
     width: 24,

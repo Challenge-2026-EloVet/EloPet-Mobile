@@ -31,7 +31,7 @@ export default function Header({ pet }: HeaderProps) {
       <View style={styles.bottomRow}>
         <View style={styles.welcomeContainer}>
           <Text style={styles.hubText}>HEALTH HUB</Text>
-          <Text style={styles.greetingText}>Olá, tutor do(a) {pet?.nome}!</Text>
+          <Text style={styles.greetingText}>Olá, tutor do(a) {pet.nome}!</Text>
           <Text style={styles.subtitleText}>Veja como ele está hoje.</Text>
         </View>
         <View style={styles.codeBadge}>

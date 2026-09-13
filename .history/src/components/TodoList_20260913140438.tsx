@@ -2,15 +2,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import type { TodoItem } from '../types/interfaces';
+import type { Pet, TodoItem } from '../types/interfaces';
 
 type TaskRowProps = {
   task: TodoItem;
   completed: boolean;
   onToggle: () => void;
+  pet: Pet;
 };
 
-function TaskRow({ task, completed, onToggle }: TaskRowProps) {
+function TaskRow({ task, completed, onToggle, pet }: TaskRowProps) {
   return (
     <TouchableOpacity
       accessibilityRole="checkbox"
@@ -83,9 +84,6 @@ function TaskSection({
           task={task}
           completed={Boolean(completedTasks[task.id])}
           onToggle={() => onToggle(task.id)}
-        />
-      ))}
-    </View>
   );
 }
 
@@ -104,7 +102,7 @@ export default function TodoList({ tasks }: { tasks: TodoItem[] }) {
       <View style={styles.listHeader}>
         <View>
           <Text style={styles.listTitle}>Cuidados de hoje</Text>
-          <Text style={styles.listSubtitle}>Pequenos cuidados, grandes resultados </Text>
+          <Text style={styles.listSubtitle}>Pequenos cuidados, mais saúde para o {pet.nome}</Text>
         </View>
         <View style={styles.counterBadge}>
           <Text style={styles.counterText}>

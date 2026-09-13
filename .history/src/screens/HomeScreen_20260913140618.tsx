@@ -158,7 +158,7 @@ export default function HomeScreen() {
             ))}
           </View>
 
-          <TodoListCuidados tasks={careTasks} />
+          <TodoListCuidados tasks={careTasks} pet={p} />
         </ScrollView>
       )}
     </SafeAreaView>

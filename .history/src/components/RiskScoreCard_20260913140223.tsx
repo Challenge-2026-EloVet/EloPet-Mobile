@@ -42,7 +42,7 @@ export default function RiskScoreCard({ pet }: RiskScoreCardProps) {
           <Ionicons name="chatbubble-ellipses-outline" size={16} color="#185A43" />
           <Text style={styles.recommendationTitle}>Recomendação clínica</Text>
         </View>
-        <Text style={styles.recommendationText}>Evite saltos e observe os movimentos do(a) {pet?.nome}. Estamos acompanhando juntos.</Text>
+        <Text style={styles.recommendationText}>Evite saltos e observe os movimentos d {pet.nome}. Estamos acompanhando juntos.</Text>
       </View>
     </View>
   );

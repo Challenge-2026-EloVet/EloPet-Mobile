@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Pet } from '../types/interfaces';
 
 type Message = {
   id: string;
@@ -18,17 +17,17 @@ const quickReplies = [
 
 const initialMessage: Message = {
   id: 'welcome',
-  text: 'Olá! Como o {pet?.nome} se comportou hoje com relação ao apetite e energia? 🐾',
+  text: 'Olá! Como o {Thor} se comportou hoje com relação ao apetite e energia? 🐾',
   sender: 'assistant',
 };
 
 function getAssistantReply(reply: string) {
   if (reply === quickReplies[0]) {
-    return `Que bom saber disso! Vou registrar que está com bom apetite e energia hoje. Continue observando com carinho. 🌿`;
+    return 'Que bom saber disso! Vou registrar que o Thor está com bom apetite e energia hoje. Continue observando com carinho. 🌿';
   }
 
   if (reply === quickReplies[1]) {
-    return `Obrigada por me contar. Registrei a redução do apetite. Ofereça água e observe o; se ele recusar a próxima refeição, avise a clínica. 💚`;
+    return 'Obrigada por me contar. Registrei a redução do apetite. Ofereça água e observe o Thor; se ele recusar a próxima refeição, avise a clínica. 💚';
   }
 
   return 'Sinto muito que ele pareça desconfortável. Registrei esse sinal de atenção. Evite saltos e, se a dor persistir ou piorar, fale com a VetLife. 🩺';

@@ -104,7 +104,7 @@ export default function TodoList({ tasks }: { tasks: TodoItem[] }) {
       <View style={styles.listHeader}>
         <View>
           <Text style={styles.listTitle}>Cuidados de hoje</Text>
-          <Text style={styles.listSubtitle}>Pequenos cuidados, grandes resultados </Text>
+          <Text style={styles.listSubtitle}>Pequenos cuidados, mais saúde para</Text>
         </View>
         <View style={styles.counterBadge}>
           <Text style={styles.counterText}>

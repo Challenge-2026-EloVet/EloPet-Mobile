@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import type { TodoItem } from '../types/interfaces';
+import type { Pet, TodoItem } from '../types/interfaces';
 
 type TaskRowProps = {
   task: TodoItem;
@@ -89,7 +89,7 @@ function TaskSection({
   );
 }
 
-export default function TodoList({ tasks }: { tasks: TodoItem[] }) {
+export default function TodoList({ tasks, pet }: { tasks: TodoItem[]; pet: Pet }) {
   const [completedTasks, setCompletedTasks] = useState<Record<string, boolean>>({});
   
   const toggleTask = (taskId: string) =>
@@ -104,7 +104,7 @@ export default function TodoList({ tasks }: { tasks: TodoItem[] }) {
       <View style={styles.listHeader}>
         <View>
           <Text style={styles.listTitle}>Cuidados de hoje</Text>
-          <Text style={styles.listSubtitle}>Pequenos cuidados, grandes resultados </Text>
+          <Text style={styles.listSubtitle}>Pequenos cuidados, mais saúde para o {pet.nome}</Text>
         </View>
         <View style={styles.counterBadge}>
           <Text style={styles.counterText}>
@@ -132,7 +132,6 @@ export default function TodoList({ tasks }: { tasks: TodoItem[] }) {
 }
 
 const styles = StyleSheet.create({
-  // TodoListCuidados Styles
   listContainer: {
     marginHorizontal: 20,
     marginTop: 36,

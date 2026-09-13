@@ -1,5 +1,19 @@
-import type { Clinic, QuickStat, TodoItem } from '../types/interfaces';
+import type { Clinic, Pet, QuickStat, Responsible, TodoItem } from '../types/interfaces';
 
+export const thor: Pet = {
+  name: 'Thor',
+  breed: 'Dachshund',
+  tutorCode: 'ELO-1234',
+};
+
+export const responsible: Responsible = {
+  name: 'Marina Oliveira',
+  email: 'marina.oliveira@email.com',
+  phone: '(11) 99842-1730',
+  city: 'São Paulo, SP',
+  initials: 'MO',
+  memberSince: 'Membro desde 2024',
+};
 
 export const quickStats: QuickStat[] = [
   { label: 'Peso', value: '9.2kg', icon: 'scale-outline' },

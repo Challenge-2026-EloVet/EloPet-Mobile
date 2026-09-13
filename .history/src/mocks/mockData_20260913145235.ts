@@ -1,4 +1,10 @@
-import type { Clinic, QuickStat, TodoItem } from '../types/interfaces';
+import type { Clinic, Pet, QuickStat, Responsible, TodoItem } from '../types/interfaces';
+
+export const thor: Pet = {
+  name: 'Thor',
+  breed: 'Dachshund',
+  tutorCode: 'ELO-1234',
+};
 
 
 export const quickStats: QuickStat[] = [

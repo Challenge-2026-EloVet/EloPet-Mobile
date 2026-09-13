@@ -28,7 +28,7 @@ function getAssistantReply(reply: string) {
   }
 
   if (reply === quickReplies[1]) {
-    return `Obrigada por me contar. Registrei a redução do apetite. Ofereça água e observe o; se ele recusar a próxima refeição, avise a clínica. 💚`;
+    return `Obrigada por me contar. Registrei a redução do apetite. Ofereça água e observe o \`${pet?.nome}\`; se ele recusar a próxima refeição, avise a clínica. 💚`;
   }
 
   return 'Sinto muito que ele pareça desconfortável. Registrei esse sinal de atenção. Evite saltos e, se a dor persistir ou piorar, fale com a VetLife. 🩺';

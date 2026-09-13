@@ -195,6 +195,11 @@ export default function Login() {
       </View>
 
       <TouchableOpacity
+            style={styles.forgotPasswordButton}>
+        <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
         style={[styles.primaryButton, isLoading && styles.disabledButton]}
         onPress={handleLogin}
         disabled={isLoading}

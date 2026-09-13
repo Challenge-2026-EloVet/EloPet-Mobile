@@ -195,6 +195,13 @@ export default function Login() {
       </View>
 
       <TouchableOpacity
+          style={styles.forgotPasswordButton}
+          onPress={alert('Código de recuperação enviado ao seu e-mail!')}
+          >
+        <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
         style={[styles.primaryButton, isLoading && styles.disabledButton]}
         onPress={handleLogin}
         disabled={isLoading}

@@ -21,42 +21,37 @@ export default function Login() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [cpf, setCPF] = useState('');
+  const [name, setName] = useState('')
+  const [cpf, setCPF] = useState('')
   const [userType, setUserType] = useState('');
   const [activeTab, setActiveTab] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = async () => {
+ const handleLogin = async () => {
     try {
       if (!email || !password) {
         alert('Preencha o nome de usuário e a senha.');
         return;
       }
 
-      setIsLoading(true);
-
       const loginResponse = await loginService(email, password);
 
       console.log(loginResponse);
-
+      
       const userId = loginResponse.idResponsavel;
 
-      if (!userId) {
+      if (!userId) {  
         throw new Error('A API de login não retornou o idResponsavel.');
       }
 
       const userData = await getUserService(userId);
 
       if (setUser) setUser(userData);
-      setIsAuthenticated(true);
+      setIsAuthenticated(true); 
 
       console.log('Login e sincronização de perfil bem-sucedidos');
 
     } catch (error: any) {
       alert(error?.message || error || 'Não foi possível conectar ao servidor.');
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -67,21 +62,20 @@ export default function Login() {
         return;
       }
 
-      setIsLoading(true);
-
-      const type = 'RESPONSAVEL';
+      const type = 'RESPONSAVEL'; 
       setUserType(type);
 
       await registerService(username, email, password, type, name, cpf);
 
       const loginResponse = await loginService(email, password);
-
-      const userId = loginResponse?.idResponsavel || loginResponse?.id;
+      
+      const userId = loginResponse?.idResponsavel || loginResponse?.id || loginResponse?.idUsuario;
 
       if (!userId) {
         throw new Error('A API não retornou o identificador do usuário após o login automático.');
       }
 
+      // 3. Busca os dados completos do usuário para a ProfileScreen
       const userData = await getUserService(userId);
 
       if (setUser) setUser(userData);
@@ -91,8 +85,6 @@ export default function Login() {
 
     } catch (error: any) {
       alert(error?.message || error || 'Erro ao realizar cadastro.');
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -112,7 +104,7 @@ export default function Login() {
       <View style={styles.inputGroup}>
         <Text style={styles.label}>CPF</Text>
         <TextInput
-          style={styles.input}
+          style={styles.input} 
           placeholder="00000000000"
           placeholderTextColor="#A0AEC0"
           value={cpf}
@@ -156,14 +148,8 @@ export default function Login() {
         />
       </View>
 
-      <TouchableOpacity
-        style={[styles.primaryButton, isLoading && styles.disabledButton]}
-        onPress={handleRegister}
-        disabled={isLoading}
-      >
-        <Text style={styles.primaryButtonText}>
-          {isLoading ? 'Cadastrando...' : 'Cadastrar'}
-        </Text>
+      <TouchableOpacity style={styles.primaryButton} onPress={handleRegister}>
+        <Text style={styles.primaryButtonText}>Cadastrar</Text>
       </TouchableOpacity>
     </View>
   );
@@ -194,14 +180,8 @@ export default function Login() {
         />
       </View>
 
-      <TouchableOpacity
-        style={[styles.primaryButton, isLoading && styles.disabledButton]}
-        onPress={handleLogin}
-        disabled={isLoading}
-      >
-        <Text style={styles.primaryButtonText}>
-          {isLoading ? 'Entrando...' : 'Entrar'}
-        </Text>
+      <TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
+        <Text style={styles.primaryButtonText}>Entrar</Text>
       </TouchableOpacity>
     </View>
   );
@@ -330,14 +310,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
+    boxShadow: '0px 4px 8px rgba(24, 90, 67, 0.15)',
     elevation: 3,
-  },
-  disabledButton: {
-    opacity: 0.7,
   },
   primaryButtonText: {
     color: '#FFFFFF',

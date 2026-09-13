@@ -39,17 +39,17 @@ export default function Login() {
       const loginResponse = await loginService(email, password);
 
       console.log(loginResponse);
-
+      
       const userId = loginResponse.idResponsavel;
 
-      if (!userId) {
+      if (!userId) {  
         throw new Error('A API de login não retornou o idResponsavel.');
       }
 
       const userData = await getUserService(userId);
 
       if (setUser) setUser(userData);
-      setIsAuthenticated(true);
+      setIsAuthenticated(true); 
 
       console.log('Login e sincronização de perfil bem-sucedidos');
 
@@ -69,13 +69,13 @@ export default function Login() {
 
       setIsLoading(true);
 
-      const type = 'RESPONSAVEL';
+      const type = 'RESPONSAVEL'; 
       setUserType(type);
 
       await registerService(username, email, password, type, name, cpf);
 
       const loginResponse = await loginService(email, password);
-
+      
       const userId = loginResponse?.idResponsavel || loginResponse?.id;
 
       if (!userId) {
@@ -112,7 +112,7 @@ export default function Login() {
       <View style={styles.inputGroup}>
         <Text style={styles.label}>CPF</Text>
         <TextInput
-          style={styles.input}
+          style={styles.input} 
           placeholder="00000000000"
           placeholderTextColor="#A0AEC0"
           value={cpf}
@@ -156,8 +156,8 @@ export default function Login() {
         />
       </View>
 
-      <TouchableOpacity
-        style={[styles.primaryButton, isLoading && styles.disabledButton]}
+      <TouchableOpacity 
+        style={[styles.primaryButton, isLoading && styles.disabledButton]} 
         onPress={handleRegister}
         disabled={isLoading}
       >
@@ -194,13 +194,17 @@ export default function Login() {
         />
       </View>
 
-      <TouchableOpacity
-        style={[styles.primaryButton, isLoading && styles.disabledButton]}
+      <TouchableOpacity style={styles.forgotPasswordButton}>
+        <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={[styles.primaryButton, isLoading && styles.disabledButton]} 
         onPress={handleLogin}
         disabled={isLoading}
       >
         <Text style={styles.primaryButtonText}>
-          {isLoading ? 'Entrando...' : 'Entrar'}
+          {isLoading ? 'Logando...' : 'Entrar'}
         </Text>
       </TouchableOpacity>
     </View>

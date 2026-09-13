@@ -93,7 +93,7 @@ export default function HomeScreen() {
           <TouchableOpacity
             style={styles.primaryButton}
             activeOpacity={0.8}
-            onPress={() => navigation.navigate('MainTabs', { screen: 'Profile' })}
+            onPress={() => navigation.navigate('MainTabs', { screen: 'ProfileScreen'})}
           >
             <Text style={styles.primaryButtonText}>Ir para o Perfil / Cadastrar Pet</Text>
           </TouchableOpacity>

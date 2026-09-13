@@ -21,7 +21,7 @@ import PetCard from '../components/PetCard';
 
 export default function ProfileScreen() {
   const { user, setUser, logout } = useAuth();
-  const queryClient = useQueryClient();
+ const queryClient = useQueryClient();
 
 
   const userId = user?.idResponsavel || user?._id || user?.userId || user?.id;
@@ -146,35 +146,36 @@ export default function ProfileScreen() {
   console.log(pets, 'pets');
 
 
-  const handlePetExclusion = (pet: Pet) => {
-    const petId = pet?.idPet;
+const handlePetExclusion = (pet: any) => {
+  const petId = pet?.idPet;
 
-    Alert.alert(
-      'Ocultar pet',
-      `Deseja realmente remover ${pet?.nome || 'este pet'} da sua lista de cuidados?`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Ocultar',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await softDeletePetService(petId);
-
-              queryClient.invalidateQueries({ queryKey: ['pets'] });
-
-              Alert.alert('Sucesso', 'Pet removido com sucesso.');
-            } catch (error) {
-              Alert.alert('Erro', 'Não foi possível remover o pet.');
-            }
-          },
+  Alert.alert(
+    'Ocultar pet', 
+    `Deseja realmente ocultar ${pet?.nome || 'este pet'} da sua visualização?`, 
+    [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Ocultar',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await softDeletePetService(petId);
+            
+            // Invalida a query para atualizar a lista de pets na tela imediatamente
+            queryClient.invalidateQueries({ queryKey: ['pets'] });
+            
+            Alert.alert('Sucesso', 'Pet ocultado com sucesso.');
+          } catch (error) {
+            Alert.alert('Erro', 'Não foi possível ocultar o pet.');
+          }
         },
-      ]
-    );
-  };
+      },
+    ]
+  );
+};
 
 
-  const handlePetEdit = (pet: Pet) => {
+  const handlePetEdit = (pet: any) => {
     navigation.navigate('RegisterPetScreen', { pet });
   };
 

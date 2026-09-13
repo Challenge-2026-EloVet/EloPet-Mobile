@@ -5,15 +5,11 @@ import * as SecureStore from 'expo-secure-store';
 const API_LOGIN_URL = process.env.EXPO_PUBLIC_API_JAVA_USER_LOGIN;
 const API_CREATION_URL = process.env.EXPO_PUBLIC_API_JAVA_USER_CREATION;
 const API_USER_URL = process.env.EXPO_PUBLIC_API_JAVA_USER;
-const API_PETS_URL = process.env.EXPO_PUBLIC_API_JAVA_PET_CRD;
-const API_PETS_UPDATE_URL = process.env.EXPO_PUBLIC_API_JAVA_PET_UPDATE;
-
+const API_PETS_URL = process.env.EXPO_PUBLIC_API_JAVA_PET_CRUD;
 
 const TOKEN_KEY = 'user_token';
 
 const USER_ID_KEY = 'user_id';
-
-const HIDDEN_PETS_KEY = 'hidden_pets';
 
 
 // AQUI É PRA PERSISTIR O ID DO USER LOGADO NA APLICAÇÃO
@@ -165,27 +161,17 @@ export const getPetsService = async (idResponsable) => {
   try {
     const config = await getAuthConfig();
     const response = await axios.get(`${API_PETS_URL}/${idResponsable}`, config);
-    const petsData = response.data;
-    const hiddenPets = await getHiddenPetsService();
-
-    if (Array.isArray(petsData)) {
-      return petsData.filter(item => {
-        const petId = item?.pet?.idPet || item?.idPet;
-        return !hiddenPets.includes(petId);
-      });
-    }
-
-    return petsData;
+    return response.data;
   } catch (error) {
     console.error('Erro no getPetsService:', error);
     throw new Error(error.response?.data?.message || 'Erro ao buscar a lista de pets.');
   }
 };
 
-export const updatePetService = async (idPet, petData) => {
+export const updatePetService = async (id, petData) => {
   try {
     const config = await getAuthConfig();
-    const response = await axios.put(`${API_PETS_UPDATE_URL}/${idPet}`, petData, config);
+    const response = await axios.put(`${API_PETS_URL}/${id}`, petData, config);
     return response.data;
   } catch (error) {
     console.error('Erro no updatePetService:', error);
@@ -209,6 +195,7 @@ export const deletePetService = async (id) => {
   }
 };
 
+const HIDDEN_PETS_KEY = 'hidden_pets';
 
 export const getHiddenPetsService = async () => {
   try {

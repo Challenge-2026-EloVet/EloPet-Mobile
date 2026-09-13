@@ -5,7 +5,7 @@ import * as SecureStore from 'expo-secure-store';
 const API_LOGIN_URL = process.env.EXPO_PUBLIC_API_JAVA_USER_LOGIN;
 const API_CREATION_URL = process.env.EXPO_PUBLIC_API_JAVA_USER_CREATION;
 const API_USER_URL = process.env.EXPO_PUBLIC_API_JAVA_USER;
-const API_PETS_URL = process.env.EXPO_PUBLIC_API_JAVA_PET_CRD;
+const API_PETS_URL = process.env.EXPO_PUBLIC_API_JAVA_PET_CRUD;
 const API_PETS_UPDATE_URL = process.env.EXPO_PUBLIC_API_JAVA_PET_UPDATE;
 
 

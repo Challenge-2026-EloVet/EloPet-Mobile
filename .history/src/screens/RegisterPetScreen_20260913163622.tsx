@@ -46,6 +46,7 @@ export default function RegisterPetScreen({ route, navigation }: { route?: any; 
         throw new Error('ID do responsável não identificado. Faça login novamente.');
       }
 
+
       if (isEditing) {
         const petDataUpdate = {
           nome: name.trim(),

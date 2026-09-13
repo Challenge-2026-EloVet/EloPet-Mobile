@@ -47,6 +47,8 @@ export default function RegisterPetScreen({ route, navigation }: { route?: any; 
       }
 
       if (isEditing) {
+
+        if (isEditing) {
         const petDataUpdate = {
           nome: name.trim(),
           especie: species,
@@ -56,7 +58,7 @@ export default function RegisterPetScreen({ route, navigation }: { route?: any; 
           sexo: gender,
           flagCastrado: castrationFlag,
         };
-
+        
         await updatePetService(petParam.idPet, petDataUpdate);
         Alert.alert('Sucesso! 🐾', `${name} foi atualizado com sucesso!`, [
           {

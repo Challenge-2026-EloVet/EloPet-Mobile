@@ -146,7 +146,7 @@ export default function ProfileScreen() {
   console.log(pets, 'pets');
 
 
-  const handlePetExclusion = (pet: Pet) => {
+  const handlePetExclusion = (pet: any) => {
     const petId = pet?.idPet;
 
     Alert.alert(
@@ -163,9 +163,9 @@ export default function ProfileScreen() {
 
               queryClient.invalidateQueries({ queryKey: ['pets'] });
 
-              Alert.alert('Sucesso', 'Pet removido com sucesso.');
+              Alert.alert('Sucesso', 'Pet ocultado com sucesso.');
             } catch (error) {
-              Alert.alert('Erro', 'Não foi possível remover o pet.');
+              Alert.alert('Erro', 'Não foi possível ocultar o pet.');
             }
           },
         },
@@ -174,7 +174,7 @@ export default function ProfileScreen() {
   };
 
 
-  const handlePetEdit = (pet: Pet) => {
+  const handlePetEdit = (pet: any) => {
     navigation.navigate('RegisterPetScreen', { pet });
   };
 

@@ -47,16 +47,20 @@ export default function RegisterPetScreen({ route, navigation }: { route?: any; 
       }
 
       if (isEditing) {
-        const petDataUpdate = {
-          nome: name.trim(),
-          especie: species,
-          raca: breed.trim(),
-          idadeAproximada: Number(age) || 0,
-          dataNascimento: birthDate.trim(),
-          sexo: gender,
-          flagCastrado: castrationFlag,
-        };
 
+        const petDataUpdate= {
+          idResponsavel: Number(userId),
+          pet: {
+            nome: name.trim(),
+            especie: species,
+            raca: breed.trim(),
+            idadeAproximada: Number(age) || 0,
+            dataNascimento: birthDate.trim(),
+            sexo: gender,
+            flagCastrado: castrationFlag,
+          },
+        };
+        
         await updatePetService(petParam.idPet, petDataUpdate);
         Alert.alert('Sucesso! 🐾', `${name} foi atualizado com sucesso!`, [
           {

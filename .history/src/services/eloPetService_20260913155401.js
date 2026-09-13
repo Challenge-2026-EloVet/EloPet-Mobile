@@ -5,15 +5,13 @@ import * as SecureStore from 'expo-secure-store';
 const API_LOGIN_URL = process.env.EXPO_PUBLIC_API_JAVA_USER_LOGIN;
 const API_CREATION_URL = process.env.EXPO_PUBLIC_API_JAVA_USER_CREATION;
 const API_USER_URL = process.env.EXPO_PUBLIC_API_JAVA_USER;
-const API_PETS_URL = process.env.EXPO_PUBLIC_API_JAVA_PET_CRD;
+const API_PETS_URL = process.env.EXPO_PUBLIC_API_JAVA_PET_CRUD;
 const API_PETS_UPDATE_URL = process.env.EXPO_PUBLIC_API_JAVA_PET_UPDATE;
 
 
 const TOKEN_KEY = 'user_token';
 
 const USER_ID_KEY = 'user_id';
-
-const HIDDEN_PETS_KEY = 'hidden_pets';
 
 
 // AQUI É PRA PERSISTIR O ID DO USER LOGADO NA APLICAÇÃO

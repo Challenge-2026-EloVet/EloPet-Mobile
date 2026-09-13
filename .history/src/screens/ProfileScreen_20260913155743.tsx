@@ -174,7 +174,7 @@ export default function ProfileScreen() {
   };
 
 
-  const handlePetEdit = (pet: Pet) => {
+  const handlePetEdit = (pet: any) => {
     navigation.navigate('RegisterPetScreen', { pet });
   };
 

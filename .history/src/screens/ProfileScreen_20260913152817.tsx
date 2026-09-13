@@ -146,12 +146,12 @@ export default function ProfileScreen() {
   console.log(pets, 'pets');
 
 
-  const handlePetExclusion = (pet: Pet) => {
+  const handlePetExclusion = (pet: any) => {
     const petId = pet?.idPet;
 
     Alert.alert(
       'Ocultar pet',
-      `Deseja realmente remover ${pet?.nome || 'este pet'} da sua lista de cuidados?`,
+      `Deseja realmente remover ${pet?.nome || 'este pet'} da sua visualização?`,
       [
         { text: 'Cancelar', style: 'cancel' },
         {
@@ -161,11 +161,12 @@ export default function ProfileScreen() {
             try {
               await softDeletePetService(petId);
 
+              // Invalida a query para atualizar a lista de pets na tela imediatamente
               queryClient.invalidateQueries({ queryKey: ['pets'] });
 
-              Alert.alert('Sucesso', 'Pet removido com sucesso.');
+              Alert.alert('Sucesso', 'Pet ocultado com sucesso.');
             } catch (error) {
-              Alert.alert('Erro', 'Não foi possível remover o pet.');
+              Alert.alert('Erro', 'Não foi possível ocultar o pet.');
             }
           },
         },
@@ -174,7 +175,7 @@ export default function ProfileScreen() {
   };
 
 
-  const handlePetEdit = (pet: Pet) => {
+  const handlePetEdit = (pet: any) => {
     navigation.navigate('RegisterPetScreen', { pet });
   };
 

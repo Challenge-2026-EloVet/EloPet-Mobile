@@ -46,18 +46,12 @@ export default function RegisterPetScreen({ route, navigation }: { route?: any; 
         throw new Error('ID do responsável não identificado. Faça login novamente.');
       }
 
-      if (isEditing) {
-        const petDataUpdate = {
-          nome: name.trim(),
-          especie: species,
-          raca: breed.trim(),
-          idadeAproximada: Number(age) || 0,
-          dataNascimento: birthDate.trim(),
-          sexo: gender,
-          flagCastrado: castrationFlag,
-        };
 
-        await updatePetService(petParam.idPet, petDataUpdate);
+
+      if (isEditing) {
+        
+        
+        await updatePetService(petParam.idPet, petData);
         Alert.alert('Sucesso! 🐾', `${name} foi atualizado com sucesso!`, [
           {
             text: 'OK',
@@ -97,7 +91,6 @@ export default function RegisterPetScreen({ route, navigation }: { route?: any; 
       }
     } catch (error: any) {
       Alert.alert('Erro', error.message || `Não foi possível ${isEditing ? 'atualizar' : 'cadastrar'} o pet.`);
-      console.log(error.response?.data)
     } finally {
       setIsLoading(false);
     }

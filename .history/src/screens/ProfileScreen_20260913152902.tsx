@@ -146,7 +146,7 @@ export default function ProfileScreen() {
   console.log(pets, 'pets');
 
 
-  const handlePetExclusion = (pet: Pet) => {
+  const handlePetExclusion = (pet: any) => {
     const petId = pet?.idPet;
 
     Alert.alert(
@@ -174,7 +174,7 @@ export default function ProfileScreen() {
   };
 
 
-  const handlePetEdit = (pet: Pet) => {
+  const handlePetEdit = (pet: any) => {
     navigation.navigate('RegisterPetScreen', { pet });
   };
 

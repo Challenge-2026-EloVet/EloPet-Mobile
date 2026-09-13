@@ -15,7 +15,7 @@ import { useAuth } from '../context/AuthProvider';
 
 export default function RegisterPetScreen({ route, navigation }: { route?: any; navigation?: any }) {
   const { user } = useAuth();
-
+  
   // Recebe o pet via parâmetros de navegação (se vier preenchido, estamos em modo edição)
   const petParam = route?.params?.pet;
   const isEditing = !!petParam?.idPet;
@@ -46,18 +46,10 @@ export default function RegisterPetScreen({ route, navigation }: { route?: any; 
         throw new Error('ID do responsável não identificado. Faça login novamente.');
       }
 
-      if (isEditing) {
-        const petDataUpdate = {
-          nome: name.trim(),
-          especie: species,
-          raca: breed.trim(),
-          idadeAproximada: Number(age) || 0,
-          dataNascimento: birthDate.trim(),
-          sexo: gender,
-          flagCastrado: castrationFlag,
-        };
+      
 
-        await updatePetService(petParam.idPet, petDataUpdate);
+      if (isEditing) {
+        await updatePetService(petParam.idPet, petData);
         Alert.alert('Sucesso! 🐾', `${name} foi atualizado com sucesso!`, [
           {
             text: 'OK',
@@ -69,21 +61,20 @@ export default function RegisterPetScreen({ route, navigation }: { route?: any; 
           },
         ]);
       } else {
+const petDataCreate = {
+        idResponsavel: Number(userId),
+        pet: {
+          nome: name.trim(),
+          especie: species,
+          raca: breed.trim(),
+          idadeAproximada: Number(age) || 0,
+          dataNascimento: birthDate.trim(),
+          sexo: gender,
+          flagCastrado: castrationFlag,
+        },
+      };
 
-        const petDataCreate = {
-          idResponsavel: Number(userId),
-          pet: {
-            nome: name.trim(),
-            especie: species,
-            raca: breed.trim(),
-            idadeAproximada: Number(age) || 0,
-            dataNascimento: birthDate.trim(),
-            sexo: gender,
-            flagCastrado: castrationFlag,
-          },
-        };
-
-        await createPetService(petDataCreate);
+        await createPetService(petData);
         Alert.alert('Oba! 🐾', `${name} foi cadastrado com sucesso!`, [
           {
             text: 'OK',
@@ -97,7 +88,6 @@ export default function RegisterPetScreen({ route, navigation }: { route?: any; 
       }
     } catch (error: any) {
       Alert.alert('Erro', error.message || `Não foi possível ${isEditing ? 'atualizar' : 'cadastrar'} o pet.`);
-      console.log(error.response?.data)
     } finally {
       setIsLoading(false);
     }
@@ -157,13 +147,13 @@ export default function RegisterPetScreen({ route, navigation }: { route?: any; 
                     ]}
                     onPress={() => setSpecies(item)}
                   >
-                    <MaterialCommunityIcons
+                    <MaterialCommunityIcons 
                       name={
                         item === 'Cachorro'
                           ? 'dog'
                           : item === 'Gato'
-                            ? 'cat'
-                            : 'heart-outline'
+                          ? 'cat'
+                          : 'heart-outline'
                       }
                       size={16}
                       color={isSelected ? '#FFFFFF' : '#185A43'}
@@ -226,7 +216,7 @@ export default function RegisterPetScreen({ route, navigation }: { route?: any; 
                 placeholder="Ex: 1999-12-18"
                 placeholderTextColor="#7E9F8E"
               />
-            </View>
+            </View> 
           </View>
 
           <View style={styles.rowInputs}>
@@ -245,7 +235,7 @@ export default function RegisterPetScreen({ route, navigation }: { route?: any; 
                       ]}
                       onPress={() => setGender(item)}
                     >
-                      <MaterialCommunityIcons
+                      <MaterialCommunityIcons 
                         name={item === 'M' ? 'gender-male' : 'gender-female'}
                         size={16}
                         color={isSelected ? '#FFFFFF' : '#185A43'}

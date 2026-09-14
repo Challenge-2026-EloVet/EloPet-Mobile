@@ -155,7 +155,7 @@ export default function ProfileScreen() {
       [
         { text: 'Cancelar', style: 'cancel' },
         {
-          text: 'Remover',
+          text: 'Ocultar',
           style: 'destructive',
           onPress: async () => {
             try {

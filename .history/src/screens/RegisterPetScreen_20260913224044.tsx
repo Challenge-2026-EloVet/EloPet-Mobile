@@ -12,12 +12,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createPetService, updatePetService, getStoredUserId } from '../services/eloPetService';
 import { useAuth } from '../context/AuthProvider';
-import { useQueryClient } from '@tanstack/react-query'; 
+import { useQueryClient } from '@tanstack/react-query'; // 1. Importe o useQueryClient
 
 export default function RegisterPetScreen({ route, navigation }: { route?: any; navigation?: any }) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
+  // Recebe o pet via parâmetros de navegação (se vier preenchido, estamos em modo edição)
   const petParam = route?.params?.pet;
   const isEditing = !!petParam?.idPet;
 
@@ -58,6 +59,7 @@ export default function RegisterPetScreen({ route, navigation }: { route?: any; 
 
         await updatePetService(petParam.idPet, petDataUpdate);
         
+        // 3. Invalida o cache das queries de pets para atualizar a Home e o Perfil instantaneamente
         queryClient.invalidateQueries({ queryKey: ['pets'] });
 
         Alert.alert('Sucesso! 🐾', `${name} foi atualizado com sucesso!`, [
@@ -86,6 +88,7 @@ export default function RegisterPetScreen({ route, navigation }: { route?: any; 
 
         await createPetService(petDataCreate);
 
+        // 3. Invalida o cache das queries de pets na criação também
         queryClient.invalidateQueries({ queryKey: ['pets'] });
 
         Alert.alert('Oba! 🐾', `${name} foi cadastrado com sucesso!`, [

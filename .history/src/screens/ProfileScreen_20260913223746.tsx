@@ -143,7 +143,7 @@ export default function ProfileScreen() {
     : [];
 
 
-  // console.log(pets, 'pets');
+  console.log(pets, 'pets');
 
 
   const handlePetExclusion = (pet : any) => {
@@ -155,7 +155,7 @@ export default function ProfileScreen() {
       [
         { text: 'Cancelar', style: 'cancel' },
         {
-          text: 'Remover',
+          text: 'Ocultar',
           style: 'destructive',
           onPress: async () => {
             try {

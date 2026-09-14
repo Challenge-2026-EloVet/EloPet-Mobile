@@ -86,6 +86,7 @@ export default function RegisterPetScreen({ route, navigation }: { route?: any; 
 
         await createPetService(petDataCreate);
 
+        // 3. Invalida o cache das queries de pets na criação também
         queryClient.invalidateQueries({ queryKey: ['pets'] });
 
         Alert.alert('Oba! 🐾', `${name} foi cadastrado com sucesso!`, [

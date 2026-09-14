@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 
-import { deletePetService, getPetsService, updateUserService } from '../services/eloPetService';
+import { deletePetService, getPetsService, softDeletePetService, updateUserService } from '../services/eloPetService';
 import { useAuth } from '../context/AuthProvider';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -143,7 +143,7 @@ export default function ProfileScreen() {
     : [];
 
 
-  // console.log(pets, 'pets');
+  console.log(pets, 'pets');
 
 
   const handlePetExclusion = (pet : any) => {
@@ -155,7 +155,7 @@ export default function ProfileScreen() {
       [
         { text: 'Cancelar', style: 'cancel' },
         {
-          text: 'Remover',
+          text: 'Ocultar',
           style: 'destructive',
           onPress: async () => {
             try {

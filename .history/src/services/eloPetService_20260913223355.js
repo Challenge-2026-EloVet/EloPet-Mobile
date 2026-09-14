@@ -13,6 +13,7 @@ const TOKEN_KEY = 'user_token';
 
 const USER_ID_KEY = 'user_id';
 
+const HIDDEN_PETS_KEY = 'hidden_pets';
 
 
 // AQUI É PRA PERSISTIR O ID DO USER LOGADO NA APLICAÇÃO
@@ -165,6 +166,15 @@ export const getPetsService = async (idResponsable) => {
     const config = await getAuthConfig();
     const response = await axios.get(`${API_PETS_URL}/${idResponsable}`, config);
     const petsData = response.data;
+    const hiddenPets = await getHiddenPetsService();
+
+    if (Array.isArray(petsData)) {
+      return petsData.filter(item => {
+        const petId = item?.pet?.idPet || item?.idPet;
+        return !hiddenPets.includes(petId);
+      });
+    }
+
     return petsData;
   } catch (error) {
     console.error('Erro no getPetsService:', error);
@@ -186,7 +196,7 @@ export const updatePetService = async (idPet, petData) => {
 export const deletePetService = async (idPetResponsavel) => {
   try {
     const config = await getAuthConfig();
-    const response = await axios.delete(`${API_PETS_URL}/${idPetResponsavel}`, config);
+    const response = await axios.delete(`${API_PETS_URL}/${id}`, config);
 
     if (response.status === 204) {
       return { success: true };
@@ -200,3 +210,25 @@ export const deletePetService = async (idPetResponsavel) => {
 };
 
 
+export const getHiddenPetsService = async () => {
+  try {
+    const data = await storage.getItem(HIDDEN_PETS_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    return [];
+  }
+};
+
+export const softDeletePetService = async (petId) => {
+  try {
+    const hidden = await getHiddenPetsService();
+    if (!hidden.includes(petId)) {
+      hidden.push(petId);
+      await storage.setItem(HIDDEN_PETS_KEY, JSON.stringify(hidden));
+    }
+    return { success: true };
+  } catch (error) {
+    console.error('Erro no soft delete:', error);
+    throw new Error('Não foi possível ocultar o pet.');
+  }
+};

@@ -58,6 +58,7 @@ export default function RegisterPetScreen({ route, navigation }: { route?: any; 
 
         await updatePetService(petParam.idPet, petDataUpdate);
         
+        // 3. Invalida o cache das queries de pets para atualizar a Home e o Perfil instantaneamente
         queryClient.invalidateQueries({ queryKey: ['pets'] });
 
         Alert.alert('Sucesso! 🐾', `${name} foi atualizado com sucesso!`, [
@@ -86,6 +87,7 @@ export default function RegisterPetScreen({ route, navigation }: { route?: any; 
 
         await createPetService(petDataCreate);
 
+        // 3. Invalida o cache das queries de pets na criação também
         queryClient.invalidateQueries({ queryKey: ['pets'] });
 
         Alert.alert('Oba! 🐾', `${name} foi cadastrado com sucesso!`, [

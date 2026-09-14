@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 
-import { deletePetService, getPetsService, updateUserService } from '../services/eloPetService';
+import { deletePetService, getPetsService, softDeletePetService, updateUserService } from '../services/eloPetService';
 import { useAuth } from '../context/AuthProvider';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -143,11 +143,11 @@ export default function ProfileScreen() {
     : [];
 
 
-  // console.log(pets, 'pets');
+  console.log(pets, 'pets');
 
 
-  const handlePetExclusion = (pet : any) => {
-    const idPetResponsable = pet?.idPetResponsavel;
+  const handlePetExclusion = (pet) => {
+    const idPetResponsable = pet?.id;
 
     Alert.alert(
       'Ocultar pet',
@@ -155,11 +155,11 @@ export default function ProfileScreen() {
       [
         { text: 'Cancelar', style: 'cancel' },
         {
-          text: 'Remover',
+          text: 'Ocultar',
           style: 'destructive',
           onPress: async () => {
             try {
-              await deletePetService(idPetResponsable);
+              await deletePetService(petId);
 
               queryClient.invalidateQueries({ queryKey: ['pets'] });
 

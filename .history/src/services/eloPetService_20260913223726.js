@@ -200,3 +200,25 @@ export const deletePetService = async (idPetResponsavel) => {
 };
 
 
+export const getHiddenPetsService = async () => {
+  try {
+    const data = await storage.getItem(HIDDEN_PETS_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    return [];
+  }
+};
+
+export const softDeletePetService = async (petId) => {
+  try {
+    const hidden = await getHiddenPetsService();
+    if (!hidden.includes(petId)) {
+      hidden.push(petId);
+      await storage.setItem(HIDDEN_PETS_KEY, JSON.stringify(hidden));
+    }
+    return { success: true };
+  } catch (error) {
+    console.error('Erro no soft delete:', error);
+    throw new Error('Não foi possível ocultar o pet.');
+  }
+};

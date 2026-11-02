@@ -7,7 +7,8 @@
     "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "icon": "./assets/logo.png"
     },
     "android": {
       "adaptiveIcon": {
@@ -24,6 +25,7 @@
     "plugins": [
       "expo-secure-store",
       "expo-status-bar",
+      "expo-notifications",
       "@react-native-community/datetimepicker"
     ]
   }

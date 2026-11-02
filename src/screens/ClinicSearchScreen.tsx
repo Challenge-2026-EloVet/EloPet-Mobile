@@ -7,6 +7,7 @@ import ClinicCard from '../components/ClinicCard';
 import { partnerClinics } from '../mocks/mockData';
 import type { Clinic } from '../types/interfaces';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { parseAppointmentDate, scheduleAppointmentReminder } from '../services/notificationService';
 
 const filters = ['Ortopedia', 'Cardiologia', 'Até 5km', 'Acessibilidade'];
 
@@ -14,6 +15,35 @@ function clinicMatchesFilter(clinic: Clinic, filter: string) {
   if (filter === 'Até 5km') return clinic.distanceKm <= 5;
   if (filter === 'Acessibilidade') return clinic.accessibility.length > 0;
   return clinic.specialties.includes(filter);
+}
+
+function formatDateMask(value: string) {
+  const cleanValue = value.replace(/\D/g, '');
+  let formatted = '';
+
+  if (cleanValue.length > 0) {
+    formatted = cleanValue.substring(0, 2);
+  }
+  if (cleanValue.length > 2) {
+    formatted += '/' + cleanValue.substring(2, 4);
+  }
+  if (cleanValue.length > 4) {
+    formatted += '/' + cleanValue.substring(4, 8);
+  }
+  return formatted;
+}
+
+function formatTimeMask(value: string) {
+  const cleanValue = value.replace(/\D/g, '');
+  let formatted = '';
+
+  if (cleanValue.length > 0) {
+    formatted = cleanValue.substring(0, 2);
+  }
+  if (cleanValue.length > 2) {
+    formatted += ':' + cleanValue.substring(2, 4);
+  }
+  return formatted;
 }
 
 export default function ClinicSearchScreen() {
@@ -67,11 +97,51 @@ export default function ClinicSearchScreen() {
       return;
     }
 
+    const appointmentAt = parseAppointmentDate(appointmentDate, appointmentTime);
+    if (!appointmentAt || appointmentAt.getTime() <= Date.now()) {
+      Alert.alert(
+        'Data ou horário inválido',
+        'Informe uma data futura no formato DD/MM/AAAA e um horário válido no formato HH:MM.'
+      );
+      return;
+    }
+
     try {
       setIsLoading(true);
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      Alert.alert('Sucesso', `Consulta agendada com sucesso na clínica ${selectedClinic?.name}!`);
+      let reminderMessage = '';
+      try {
+        if (!selectedClinic) {
+          throw new Error('Nenhuma clínica foi selecionada para a consulta.');
+        }
+
+        const reminder = await scheduleAppointmentReminder({
+          appointmentDate: appointmentAt,
+          clinicName: selectedClinic.name,
+          specialty: selectedSpecialty.trim(),
+        });
+
+        if (reminder) {
+          const reminderTime = reminder.reminderDate.toLocaleString('pt-BR', {
+            dateStyle: 'short',
+            timeStyle: 'short',
+          });
+          reminderMessage = ` Um lembrete foi programado para ${reminderTime}.`;
+        } else {
+          reminderMessage = ' Ative as notificações no Perfil para receber lembretes.';
+        }
+      } catch (notificationError) {
+        console.error('Erro ao programar o lembrete da consulta:', notificationError);
+        reminderMessage = notificationError instanceof Error
+          ? ` Não foi possível programar o lembrete: ${notificationError.message}`
+          : ' Não foi possível programar o lembrete da consulta.';
+      }
+
+      Alert.alert(
+        'Consulta agendada',
+        `Consulta agendada com sucesso na clínica ${selectedClinic?.name}.${reminderMessage}`
+      );
       setIsAppointmentModalVisible(false);
       
       // Limpar campos
@@ -229,29 +299,33 @@ export default function ClinicSearchScreen() {
                 />
               </View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Data da consulta</Text>
-                <TextInput
-                  style={styles.textInput}
-                  value={appointmentDate}
-                  onChangeText={setAppointmentDate}
-                  placeholder="DD/MM/AAAA"
-                  placeholderTextColor="#7E9F8E"
-                  keyboardType="numeric"
-                />
-              </View>
+             {/* Campo Data da Consulta */}
+    <View style={styles.inputGroup}>
+  <Text style={styles.inputLabel}>Data da consulta</Text>
+  <TextInput
+    style={styles.textInput}
+    value={appointmentDate}
+    onChangeText={(text) => setAppointmentDate(formatDateMask(text))} // 👈 Aplica a máscara
+    placeholder="DD/MM/AAAA"
+    placeholderTextColor="#7E9F8E"
+    keyboardType="numeric"
+    maxLength={10} // 👈 Limita o tamanho máximo da string formatada
+  />
+</View>
 
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Horário</Text>
-                <TextInput
-                  style={styles.textInput}
-                  value={appointmentTime}
-                  onChangeText={setAppointmentTime}
-                  placeholder="HH:MM"
-                  placeholderTextColor="#7E9F8E"
-                  keyboardType="numeric"
-                />
-              </View>
+{/* Campo Horário */}
+<View style={styles.inputGroup}>
+  <Text style={styles.inputLabel}>Horário</Text>
+  <TextInput
+    style={styles.textInput}
+    value={appointmentTime}
+    onChangeText={(text) => setAppointmentTime(formatTimeMask(text))} // 👈 Aplica a máscara
+    placeholder="HH:MM"
+    placeholderTextColor="#7E9F8E"
+    keyboardType="numeric"
+    maxLength={5} // 👈 Limita o tamanho máximo (HH:MM)
+  />
+</View>
 
               <View style={styles.inputGroup}>
                 <Text style={styles.inputLabel}>Observações (Opcional)</Text>

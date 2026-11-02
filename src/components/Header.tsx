@@ -19,13 +19,6 @@ export default function Header({ pet }: HeaderProps) {
             <Text style={styles.brandText}>ELO VET</Text>
           </View>
         </View>
-        <TouchableOpacity
-          accessibilityLabel="Abrir notificações"
-          activeOpacity={0.7}
-          style={styles.notificationButton}
-        >
-          <Ionicons name="notifications-outline" size={20} color="#A3D9C9" />
-        </TouchableOpacity>
       </View>
 
       <View style={styles.bottomRow}>
@@ -80,14 +73,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 2,
     color: '#A3D9C9',
-  },
-  notificationButton: {
-    height: 40,
-    width: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 999,
-    backgroundColor: 'rgba(163, 217, 201, 0.15)',
   },
   bottomRow: {
     flexDirection: 'row',

@@ -9,6 +9,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Platform,
 } from 'react-native';
 
 import { deletePetService, getPetsService, updateUserService } from '../services/eloPetService';
@@ -19,9 +20,14 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Pet } from '../types/interfaces';
 import PetCard from '../components/PetCard';
 
-// 🔹 Importações do Firebase Firestore para apagar o prontuário
 import { collection, query, where, getDocs, deleteDoc } from 'firebase/firestore';
 import { db } from '../services/firebaseConfig';
+import {
+  cancelScheduledAppointmentReminders,
+  getNotificationPermissionStatus,
+  getScheduledAppointmentReminders,
+  requestNotificationPermission,
+} from '../services/notificationService';
 
 export default function ProfileScreen() {
   const { user, setUser, logout } = useAuth();
@@ -72,7 +78,7 @@ export default function ProfileScreen() {
       label: 'Notificações',
       detail: 'Alertas de saúde e lembretes',
       icon: 'notifications-outline' as const,
-      onPress: () => showActionFeedback('Notificações'),
+      onPress: handleNotificationSettings,
     },
     {
       label: 'Privacidade e segurança',
@@ -85,6 +91,72 @@ export default function ProfileScreen() {
   const showActionFeedback = (label: string) => {
     Alert.alert(label, 'Esta área estará disponível em breve.');
   };
+
+  async function handleEnableNotifications() {
+    try {
+      const granted = await requestNotificationPermission();
+      Alert.alert(
+        'Notificações',
+        granted
+          ? 'Permissão concedida. Os lembretes de consultas agendadas serão exibidos neste dispositivo.'
+          : 'Permissão não concedida. Ative as notificações nas configurações do dispositivo para receber lembretes.'
+      );
+    } catch (error) {
+      console.error('Erro ao solicitar permissão para notificações:', error);
+      Alert.alert(
+        'Notificações indisponíveis',
+        error instanceof Error ? error.message : 'Não foi possível solicitar a permissão.'
+      );
+    }
+  }
+
+  async function handleCancelAppointmentReminders() {
+    try {
+      const cancelledCount = await cancelScheduledAppointmentReminders();
+      Alert.alert(
+        'Lembretes cancelados',
+        cancelledCount > 0
+          ? `${cancelledCount} lembrete(s) de consulta cancelado(s).`
+          : 'Não há lembretes de consulta pendentes.'
+      );
+    } catch (error) {
+      console.error('Erro ao cancelar lembretes de consulta:', error);
+      Alert.alert('Erro', 'Não foi possível cancelar os lembretes de consulta.');
+    }
+  }
+
+  async function handleNotificationSettings() {
+    if (Platform.OS === 'web') {
+      Alert.alert('Notificações', 'Os lembretes locais estão disponíveis no aplicativo móvel.');
+      return;
+    }
+
+    try {
+      const [permissionStatus, reminders] = await Promise.all([
+        getNotificationPermissionStatus(),
+        getScheduledAppointmentReminders(),
+      ]);
+
+      Alert.alert(
+        'Notificações',
+        `Permissão: ${permissionStatus === 'granted' ? 'ativada' : 'não ativada'}.\nLembretes de consulta pendentes: ${reminders.length}.`,
+        [
+          { text: 'Ativar notificações', onPress: () => { void handleEnableNotifications(); } },
+          ...(reminders.length > 0
+            ? [{
+                text: 'Cancelar lembretes',
+                style: 'destructive' as const,
+                onPress: () => { void handleCancelAppointmentReminders(); },
+              }]
+            : []),
+          { text: 'Fechar', style: 'cancel' },
+        ]
+      );
+    } catch (error) {
+      console.error('Erro ao consultar as configurações de notificações:', error);
+      Alert.alert('Erro', 'Não foi possível consultar os lembretes deste dispositivo.');
+    }
+  }
 
   const handleLogout = () => {
     Alert.alert('Sair da conta', 'Deseja realmente encerrar sua sessão?', [

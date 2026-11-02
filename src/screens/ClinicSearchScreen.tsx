@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
+import * as Location from 'expo-location';
 import { useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import ClinicCard from '../components/ClinicCard';
 import { partnerClinics } from '../mocks/mockData';
@@ -21,6 +22,14 @@ export default function ClinicSearchScreen() {
   const [selectedClinicId, setSelectedClinicId] = useState(partnerClinics[0].id);
   const [isToastVisible, setIsToastVisible] = useState(false);
 
+  // 🔹 Estados para controlar o Modal de Agendamento
+  const [isAppointmentModalVisible, setIsAppointmentModalVisible] = useState(false);
+  const [selectedSpecialty, setSelectedSpecialty] = useState('');
+  const [appointmentDate, setAppointmentDate] = useState('');
+  const [appointmentTime, setAppointmentTime] = useState('');
+  const [appointmentNotes, setAppointmentNotes] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
   const filteredClinics = useMemo(() => partnerClinics.filter((clinic) => {
     const normalizedQuery = query.trim().toLowerCase();
     const matchesQuery = !normalizedQuery || clinic.name.toLowerCase().includes(normalizedQuery) || clinic.specialties.some((specialty) => specialty.toLowerCase().includes(normalizedQuery));
@@ -29,9 +38,52 @@ export default function ClinicSearchScreen() {
 
   const selectedClinic = filteredClinics.find((clinic) => clinic.id === selectedClinicId) ?? filteredClinics[0];
 
-  const showRouteToast = () => {
-    setIsToastVisible(true);
-    setTimeout(() => setIsToastVisible(false), 2400);
+  // 🔹 Função para solicitar permissão de localização e simular a rota
+  const handleRouteRequest = async () => {
+    try {
+      // 1. Solicita autorização do usuário para acessar a localização
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permissão negada',
+          'Precisamos da sua permissão de localização para calcular e traçar a rota até a clínica.'
+        );
+        return;
+      }
+
+      // 2. Simula a traçada de rota com o Waze/Maps (mantendo a lógica original do Toast)
+      setIsToastVisible(true);
+      setTimeout(() => setIsToastVisible(false), 2400);
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível obter a permissão de localização.');
+    }
+  };
+
+  // 🔹 Função para lidar com o envio do agendamento
+  const handleConfirmAppointment = async () => {
+    if (!appointmentDate || !appointmentTime || !selectedSpecialty) {
+      Alert.alert('Atenção', 'Preencha a especialidade, data e horário desejados.');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      Alert.alert('Sucesso', `Consulta agendada com sucesso na clínica ${selectedClinic?.name}!`);
+      setIsAppointmentModalVisible(false);
+      
+      // Limpar campos
+      setAppointmentDate('');
+      setAppointmentTime('');
+      setSelectedSpecialty('');
+      setAppointmentNotes('');
+    } catch (error: any) {
+      Alert.alert('Erro', error.message || 'Não foi possível concluir o agendamento.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -122,8 +174,19 @@ export default function ClinicSearchScreen() {
           {activeFilter ? <TouchableOpacity activeOpacity={0.7} onPress={() => setActiveFilter(null)}><Text style={styles.clearFilterText}>Limpar filtro</Text></TouchableOpacity> : null}
         </View>
 
-        {selectedClinic ? <View style={styles.cardWrapper}><ClinicCard clinic={selectedClinic} onRoute={showRouteToast} /></View> : <View style={styles.emptyCard}><Text style={styles.emptyText}>Nenhuma clínica encontrada.</Text></View>}
+        {selectedClinic ? (
+          <View style={styles.cardWrapper}>
+            <ClinicCard 
+              clinic={selectedClinic} 
+              onRoute={handleRouteRequest} 
+              onSchedule={() => setIsAppointmentModalVisible(true)}
+            />
+          </View>
+        ) : (
+          <View style={styles.emptyCard}><Text style={styles.emptyText}>Nenhuma clínica encontrada.</Text></View>
+        )}
       </ScrollView>
+
       {isToastVisible ? (
         <View style={styles.toastContainer}>
           <Ionicons name="navigate" size={18} color="#A3D9C9" />
@@ -131,6 +194,100 @@ export default function ClinicSearchScreen() {
           <Ionicons name="checkmark-circle" size={18} color="#A3D9C9" />
         </View>
       ) : null}
+
+      {/* 🔹 Modal com suporte a subida do teclado (KeyboardAvoidingView) */}
+      <Modal
+        visible={isAppointmentModalVisible}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => setIsAppointmentModalVisible(false)}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.modalOverlay}
+        >
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <View>
+                <Text style={styles.modalTitle}>Agendar Consulta</Text>
+                <Text style={styles.modalSubtitle}>{selectedClinic?.name}</Text>
+              </View>
+              <TouchableOpacity onPress={() => setIsAppointmentModalVisible(false)} style={styles.closeButton}>
+                <Ionicons name="close" size={20} color="#185A43" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView contentContainerStyle={styles.modalFormContent} showsVerticalScrollIndicator={false}>
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Especialidade</Text>
+                <TextInput
+                  style={styles.textInput}
+                  value={selectedSpecialty}
+                  onChangeText={setSelectedSpecialty}
+                  placeholder="Ex: Ortopedia, Clínica Geral..."
+                  placeholderTextColor="#7E9F8E"
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Data da consulta</Text>
+                <TextInput
+                  style={styles.textInput}
+                  value={appointmentDate}
+                  onChangeText={setAppointmentDate}
+                  placeholder="DD/MM/AAAA"
+                  placeholderTextColor="#7E9F8E"
+                  keyboardType="numeric"
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Horário</Text>
+                <TextInput
+                  style={styles.textInput}
+                  value={appointmentTime}
+                  onChangeText={setAppointmentTime}
+                  placeholder="HH:MM"
+                  placeholderTextColor="#7E9F8E"
+                  keyboardType="numeric"
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Observações (Opcional)</Text>
+                <TextInput
+                  style={[styles.textInput, { height: 80, textAlignVertical: 'top' }]}
+                  value={appointmentNotes}
+                  onChangeText={setAppointmentNotes}
+                  placeholder="Descreva brevemente o sintoma ou necessidade do pet"
+                  placeholderTextColor="#7E9F8E"
+                  multiline
+                />
+              </View>
+
+              <View style={styles.modalButtonRow}>
+                <TouchableOpacity
+                  style={styles.cancelButton}
+                  activeOpacity={0.75}
+                  onPress={() => setIsAppointmentModalVisible(false)}
+                  disabled={isLoading}
+                >
+                  <Text style={styles.cancelButtonText}>Cancelar</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.saveButton, isLoading && { opacity: 0.7 }]}
+                  activeOpacity={0.75}
+                  onPress={handleConfirmAppointment}
+                  disabled={isLoading}
+                >
+                  <Text style={styles.saveButtonText}>{isLoading ? 'Agendando...' : 'Confirmar'}</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -420,6 +577,110 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  // Estilos do Modal com suporte a ajuste de teclado
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    width: '100%',
+    maxWidth: 420,
+    maxHeight: '90%', // Garante que o modal não estoure a tela verticalmente quando o teclado abrir
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 20,
+    shadowColor: '#185A43',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 5,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(126, 159, 142, 0.15)',
+    paddingBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#185A43',
+  },
+  modalSubtitle: {
+    fontSize: 12,
+    color: '#7E9F8E',
+    marginTop: 2,
+  },
+  closeButton: {
+    height: 36,
+    width: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(163, 217, 201, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalFormContent: {
+    paddingBottom: 10,
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#185A43',
+    marginBottom: 6,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: 'rgba(126, 159, 142, 0.3)',
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 14,
+    color: '#185A43',
+    backgroundColor: '#F8FAFC',
+  },
+  modalButtonRow: {
+    zIndex: 1,
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 8,
+  },
+  cancelButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(126, 159, 142, 0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  cancelButtonText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#7E9F8E',
+  },
+  saveButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 12,
+    backgroundColor: '#185A43',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  saveButtonText: {
+    fontSize: 14,
+    fontWeight: 'bold',
     color: '#FFFFFF',
   },
 });

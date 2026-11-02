@@ -1,20 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import type { Clinic } from '../types/interfaces';
 
 type ClinicCardProps = {
   clinic: Clinic;
   onRoute: () => void;
+  onSchedule: () => void; // 🔹 Nova propriedade para abrir o modal
 };
 
-export default function ClinicCard({ clinic, onRoute }: ClinicCardProps) {
-  const confirmAppointment = () => {
-    Alert.alert('Solicitação enviada', `A ${clinic.name} recebeu seu pedido de agendamento.`, [
-      { text: 'Entendi', style: 'default' },
-    ]);
-  };
-
+export default function ClinicCard({ clinic, onRoute, onSchedule }: ClinicCardProps) {
   return (
     <View style={styles.card}>
       <View style={styles.header}>
@@ -50,7 +45,7 @@ export default function ClinicCard({ clinic, onRoute }: ClinicCardProps) {
       </View>
 
       <View style={styles.actionsContainer}>
-        <TouchableOpacity activeOpacity={0.75} style={[styles.button, styles.primaryButton]} onPress={confirmAppointment}>
+        <TouchableOpacity activeOpacity={0.75} style={[styles.button, styles.primaryButton]} onPress={onSchedule}>
           <Ionicons name="calendar-outline" size={17} color="#FFFFFF" />
           <Text style={styles.primaryButtonText}>Agendar Consulta</Text>
         </TouchableOpacity>
@@ -74,7 +69,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 6,
-    elevation: 3, // Equivalente a shadow-md no Android
+    elevation: 3,
   },
   header: {
     marginBottom: 16,
@@ -119,7 +114,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8, // Nota: 'gap' é suportado nas versões mais recentes do React Native. Se der erro, use margin nas tags.
+    gap: 8,
   },
   specialtyBadge: {
     borderRadius: 999,
@@ -156,7 +151,7 @@ const styles = StyleSheet.create({
   },
   actionsContainer: {
     flexDirection: 'row',
-    gap: 12, // Nota: Equivalente a gap-3.
+    gap: 12,
   },
   button: {
     flex: 1,

@@ -1,18 +1,55 @@
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from 'react-native';
 
-import type { Pet } from '../types/interfaces';
-
 type RiskScoreCardProps = {
-  pet: Pet;
+  pet: any;
+  scoreData: any;
 };
 
-export default function RiskScoreCard({ pet }: RiskScoreCardProps) {
+export default function RiskScoreCard({ pet, scoreData }: RiskScoreCardProps) {
+  const valorNum = Number(scoreData?.valor ?? 7.2);
+  const categoria = scoreData?.categoria ?? 'Atenção Geral';
+  const observacao = scoreData?.observacao ?? 'Acompanhamento regular de saúde';
+  const recomendacao = scoreData?.recomendacao ?? `Mantenha os cuidados em dia para o(a) ${pet?.nome || 'pet'}.`;
+
+  const getThemeByScore = (score: number) => {
+    if (score <= 5) {
+      return {
+        borderLeftColor: '#E57373',
+        iconBg: 'rgba(229, 115, 115, 0.2)',
+        circleBorder: 'rgba(229, 115, 115, 0.35)',
+        circleInner: '#E57373',
+        badgeBg: 'rgba(229, 115, 115, 0.2)',
+        badgeText: '#C62828',
+      };
+    } else if (score >= 8) {
+      return {
+        borderLeftColor: '#64B5F6',
+        iconBg: 'rgba(100, 181, 246, 0.2)',
+        circleBorder: 'rgba(100, 181, 246, 0.35)',
+        circleInner: '#64B5F6',
+        badgeBg: 'rgba(100, 181, 246, 0.2)',
+        badgeText: '#1565C0',
+      };
+    } else {
+      return {
+        borderLeftColor: '#DFB461',
+        iconBg: 'rgba(223, 180, 97, 0.2)',
+        circleBorder: 'rgba(223, 180, 97, 0.35)',
+        circleInner: '#DFB461',
+        badgeBg: 'rgba(223, 180, 97, 0.2)',
+        badgeText: '#185A43',
+      };
+    }
+  };
+
+  const theme = getThemeByScore(valorNum);
+
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { borderLeftColor: theme.borderLeftColor }]}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <View style={styles.iconContainer}>
+          <View style={[styles.iconContainer, { backgroundColor: theme.iconBg }]}>
             <Ionicons name="pulse" size={23} color="#185A43" />
           </View>
           <View>
@@ -20,20 +57,22 @@ export default function RiskScoreCard({ pet }: RiskScoreCardProps) {
             <Text style={styles.petInfo}></Text>
           </View>
         </View>
-        <View style={styles.badge}>
-          <Text style={styles.badgeText}>ATENÇÃO</Text>
+        <View style={[styles.badge, { backgroundColor: theme.badgeBg }]}>
+          <Text style={[styles.badgeText, { color: theme.badgeText }]}>
+            {valorNum <= 5 ? 'CRÍTICO' : valorNum >= 8 ? 'ESTÁVEL' : 'ATENÇÃO'}
+          </Text>
         </View>
       </View>
 
       <View style={styles.contentRow}>
-        <View style={styles.circleOuter}>
-          <View style={styles.circleInner} />
-          <Text style={styles.scoreNumber}>7.2</Text>
+        <View style={[styles.circleOuter, { borderColor: theme.circleBorder }]}>
+          <View style={[styles.circleInner, { borderColor: theme.circleInner }]} />
+          <Text style={styles.scoreNumber}>{valorNum.toFixed(1)}</Text>
           <Text style={styles.scoreMax}>/10</Text>
         </View>
         <View style={styles.contentDetails}>
-          <Text style={styles.alertTitle}>Atenção Ortopédica</Text>
-          <Text style={styles.alertDescription}>Risco moderado de coluna</Text>
+          <Text style={styles.alertTitle}>{categoria}</Text>
+          <Text style={styles.alertDescription}>{observacao}</Text>
         </View>
       </View>
 
@@ -42,7 +81,7 @@ export default function RiskScoreCard({ pet }: RiskScoreCardProps) {
           <Ionicons name="chatbubble-ellipses-outline" size={16} color="#185A43" />
           <Text style={styles.recommendationTitle}>Recomendação clínica</Text>
         </View>
-        <Text style={styles.recommendationText}>Evite saltos e observe os movimentos do(a) {pet?.nome}. Estamos acompanhando juntos.</Text>
+        <Text style={styles.recommendationText}>{recomendacao}</Text>
       </View>
     </View>
   );
@@ -55,7 +94,6 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     borderRadius: 24,
     borderLeftWidth: 6,
-    borderLeftColor: '#DFB461',
     backgroundColor: '#FFFFFF',
     padding: 24,
     shadowColor: '#185A43',
@@ -81,7 +119,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 16,
-    backgroundColor: 'rgba(223, 180, 97, 0.2)',
   },
   scoreLabel: {
     fontSize: 11,
@@ -97,14 +134,12 @@ const styles = StyleSheet.create({
   },
   badge: {
     borderRadius: 999,
-    backgroundColor: 'rgba(223, 180, 97, 0.2)',
     paddingHorizontal: 12,
     paddingVertical: 6,
   },
   badgeText: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#185A43',
   },
   contentRow: {
     flexDirection: 'row',
@@ -118,7 +153,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 999,
     borderWidth: 7,
-    borderColor: 'rgba(223, 180, 97, 0.35)',
   },
   circleInner: {
     position: 'absolute',
@@ -126,7 +160,6 @@ const styles = StyleSheet.create({
     width: 78,
     borderRadius: 999,
     borderWidth: 7,
-    borderColor: '#DFB461',
   },
   scoreNumber: {
     fontSize: 20,

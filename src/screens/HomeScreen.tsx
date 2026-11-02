@@ -9,12 +9,15 @@ import Header from '../components/Header';
 import RiskScoreCard from '../components/RiskScoreCard';
 import StatCard from '../components/StatCard';
 import TodoListCuidados from '../components/TodoList';
-import { careTasks, quickStats } from '../mocks/mockData';
 import { getPetsService, getStoredUserId } from '../services/eloPetService';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../services/firebaseConfig';
 
 export default function HomeScreen() {
   const navigation = useNavigation<any>();
   const [selectedPet, setSelectedPet] = useState<any>(null);
+
+  // JAVA SERVICE
 
   const handleCurrentUserId = async () => {
     try {
@@ -62,6 +65,59 @@ export default function HomeScreen() {
     }
   }, [pets]);
 
+  // FIREBASE SERVICE - Consulta do Prontuário
+  const handlePetProntuary = async (petId: string | number) => {
+    if (!petId) return null;
+    try {
+      const q = query(
+        collection(db, 'prontuarios'),
+        where('pet.petId', '==', petId)
+      );
+      const querySnapshot = await getDocs(q);
+      
+      if (querySnapshot.empty) {
+        console.log('Nenhum prontuário encontrado para este pet.');
+        return null;
+      }
+
+      const docData = querySnapshot.docs[0].data();
+      return docData;
+    } catch (error) {
+      console.error('Erro ao buscar prontuário:', error);
+      return null;
+    }
+  };
+
+  // Query para buscar o prontuário sempre que o selectedPet mudar
+  const { data: prontuaryData, isLoading: isLoadingProntuary } = useQuery({
+    queryKey: ['prontuary', selectedPet?.idPet],
+    queryFn: () => handlePetProntuary(selectedPet?.idPet),
+    enabled: !!selectedPet?.idPet,
+  });
+
+  // Geração dinâmica de estatísticas e tarefas baseadas no Firestore ou valores padrão caso o prontuário esteja vazio
+  const quickStats = [
+    { label: 'Idade Aprox.', value: prontuaryData?.pet?.idadeAproximada ? `${prontuaryData.pet.idadeAproximada} anos` : 'N/D', icon: 'calendar-outline' },
+    { label: 'Espécie', value: prontuaryData?.pet?.especie || 'N/D', icon: 'paw-outline' },
+    { label: 'Raça', value: prontuaryData?.pet?.raca || 'N/D', icon: 'information-outline' },
+  ];
+
+  // Mapeia consultas e exames do Firestore para a lista de tarefas/cuidados, se existirem
+  const careTasks = [
+    ...(prontuaryData?.consultas || []).map((consulta: any, index: number) => ({
+      id: `consulta-${index}`,
+      label: typeof consulta === 'string' && consulta !== '' ? consulta : `Consulta agendada/realizada`,
+      category: 'clinical',
+      icon: 'medkit-outline',
+    })),
+    ...(prontuaryData?.exames || []).map((exame: any, index: number) => ({
+      id: `exame-${index}`,
+      label: typeof exame === 'string' && exame !== '' ? exame : `Exame pendente/realizado`,
+      category: 'preventive',
+      icon: 'clipboard-text-outline',
+    })),
+  ];
+
   if (isLoading) {
     return (
       <View style={[styles.center, { backgroundColor: '#F8FAFC' }]}>
@@ -81,7 +137,6 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {!pets || pets.length === 0 ? (
-        // 1 - Cenário sem nenhum pet cadastrado
         <View style={styles.emptyStateContainer}>
           <View style={styles.emptyIconWrapper}>
             <MaterialCommunityIcons name="paw-off" size={48} color="#185A43" />

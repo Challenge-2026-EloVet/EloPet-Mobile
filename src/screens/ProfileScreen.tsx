@@ -19,10 +19,13 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Pet } from '../types/interfaces';
 import PetCard from '../components/PetCard';
 
+// 🔹 Importações do Firebase Firestore para apagar o prontuário
+import { collection, query, where, getDocs, deleteDoc } from 'firebase/firestore';
+import { db } from '../services/firebaseConfig';
+
 export default function ProfileScreen() {
   const { user, setUser, logout } = useAuth();
   const queryClient = useQueryClient();
-
 
   const userId = user?.idResponsavel || user?._id || user?.userId || user?.id;
 
@@ -142,12 +145,10 @@ export default function ProfileScreen() {
     ? rawPets.map((item) => (item?.pet ? { ...item.pet, idPetResponsavel: item.idPetResponsavel } : item))
     : [];
 
-
-  // console.log(pets, 'pets');
-
-
-  const handlePetExclusion = (pet : any) => {
+  const handlePetExclusion = (pet: any) => {
     const idPetResponsable = pet?.idPetResponsavel;
+    // Identifica o ID do pet propriamente dito (pode estar em idPet ou petId)
+    const petId = pet?.idPet || pet?.petId;
 
     Alert.alert(
       'Ocultar pet',
@@ -159,12 +160,43 @@ export default function ProfileScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
+              // 1. Remove do backend principal
               await deletePetService(idPetResponsable);
+
+              // 2. 🔹 Deleta o prontuário correspondente no Firebase Firestore
+              if (petId) {
+                const numericId = Number(petId);
+                const stringId = String(petId);
+
+                // Tenta buscar pelo ID numérico
+                const qNum = query(collection(db, 'prontuarios'), where('pet.petId', '==', numericId));
+                const snapshotNum = await getDocs(qNum);
+
+                let targetDocRef = null;
+
+                if (!snapshotNum.empty) {
+                  targetDocRef = snapshotNum.docs[0].ref;
+                } else {
+                  // Se não achar por número, tenta buscar por string
+                  const qStr = query(collection(db, 'prontuarios'), where('pet.petId', '==', stringId));
+                  const snapshotStr = await getDocs(qStr);
+                  if (!snapshotStr.empty) {
+                    targetDocRef = snapshotStr.docs[0].ref;
+                  }
+                }
+
+                // Se encontrou o documento, executa o deleteDoc
+                if (targetDocRef) {
+                  await deleteDoc(targetDocRef);
+                  console.log(`Prontuário do pet ${petId} deletado com sucesso do Firestore.`);
+                }
+              }
 
               queryClient.invalidateQueries({ queryKey: ['pets'] });
 
-              Alert.alert('Sucesso', 'Pet removido com sucesso.');
+              Alert.alert('Sucesso', 'Pet e prontuário removidos com sucesso.');
             } catch (error) {
+              console.error('Erro ao remover pet/prontuário:', error);
               Alert.alert('Erro', 'Não foi possível remover o pet.');
             }
           },
@@ -173,14 +205,10 @@ export default function ProfileScreen() {
     );
   };
 
-
   const handlePetEdit = (pet: Pet) => {
     navigation.navigate('RegisterPetScreen', { pet });
   };
 
-
-  // AQUI EU TIVE QUE MUDAR A ESTRUTURA DA PAGINA DO PADRÃO QUE USAMOS PQ ESTAVA CRASHANDO O SWIPELISTVIEW DO PETCARD
-  // COM O SCROLLVIEW DA PROFILESCREEN. ENTAO CRIEI ESTRUTURA DE HEADER E FOOTER 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <PetCard

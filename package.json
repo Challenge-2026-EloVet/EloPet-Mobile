@@ -12,6 +12,7 @@
     "expo": "^58.0.22",
     "expo-secure-store": "~58.0.2",
     "expo-status-bar": "~58.0.4",
+    "firebase": "^13.1.0",
     "install": "^0.13.0",
     "npx": "^10.2.2",
     "react": "19.3.0",

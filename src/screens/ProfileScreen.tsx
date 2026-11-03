@@ -81,10 +81,10 @@ export default function ProfileScreen() {
       onPress: handleNotificationSettings,
     },
     {
-      label: 'Privacidade e segurança',
-      detail: 'Controle dos seus dados',
-      icon: 'shield-checkmark-outline' as const,
-      onPress: () => showActionFeedback('Privacidade e segurança'),
+      label: 'Sobre',
+      detail: 'Informações sobre o aplicativo',
+      icon: 'info' as const,
+      onPress: () => showActionFeedback('Sobre'),
     },
   ];
 

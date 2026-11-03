@@ -1,55 +1,31 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import ClinicCard from '../components/ClinicCard';
-import { partnerClinics } from '../mocks/mockData';
 import type { Clinic } from '../types/interfaces';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { parseAppointmentDate, scheduleAppointmentReminder } from '../services/notificationService';
+import { getClinicsService } from '../services/eloPetService';
+import { formatDateMask, formatTimeMask } from '../utils/functions';
 
-const filters = ['Ortopedia', 'Cardiologia', 'Até 5km', 'Acessibilidade'];
+const filters = ['Ortopedia', 'Cardiologia', 'Clinica Geral','Dermatologia','Acessibilidade'];
 
 function clinicMatchesFilter(clinic: Clinic, filter: string) {
-  if (filter === 'Até 5km') return clinic.distanceKm <= 5;
-  if (filter === 'Acessibilidade') return clinic.accessibility.length > 0;
-  return clinic.specialties.includes(filter);
-}
-
-function formatDateMask(value: string) {
-  const cleanValue = value.replace(/\D/g, '');
-  let formatted = '';
-
-  if (cleanValue.length > 0) {
-    formatted = cleanValue.substring(0, 2);
-  }
-  if (cleanValue.length > 2) {
-    formatted += '/' + cleanValue.substring(2, 4);
-  }
-  if (cleanValue.length > 4) {
-    formatted += '/' + cleanValue.substring(4, 8);
-  }
-  return formatted;
-}
-
-function formatTimeMask(value: string) {
-  const cleanValue = value.replace(/\D/g, '');
-  let formatted = '';
-
-  if (cleanValue.length > 0) {
-    formatted = cleanValue.substring(0, 2);
-  }
-  if (cleanValue.length > 2) {
-    formatted += ':' + cleanValue.substring(2, 4);
-  }
-  return formatted;
+  if (filter === 'Acessibilidade') return clinic.accessibility && clinic.accessibility.length > 0;
+  return clinic.specialties && clinic.specialties.includes(filter);
 }
 
 export default function ClinicSearchScreen() {
   const [query, setQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
-  const [selectedClinicId, setSelectedClinicId] = useState(partnerClinics[0].id);
+  
+  // 🔹 Estados para gerenciar as clínicas vindas da API Java
+  const [clinics, setClinics] = useState<Clinic[]>([]);
+  const [isLoadingClinics, setIsLoadingClinics] = useState(true);
+  
+  const [selectedClinicId, setSelectedClinicId] = useState<string | number | null>(null);
   const [isToastVisible, setIsToastVisible] = useState(false);
 
   // 🔹 Estados para controlar o Modal de Agendamento
@@ -60,18 +36,41 @@ export default function ClinicSearchScreen() {
   const [appointmentNotes, setAppointmentNotes] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const filteredClinics = useMemo(() => partnerClinics.filter((clinic) => {
-    const normalizedQuery = query.trim().toLowerCase();
-    const matchesQuery = !normalizedQuery || clinic.name.toLowerCase().includes(normalizedQuery) || clinic.specialties.some((specialty) => specialty.toLowerCase().includes(normalizedQuery));
-    return matchesQuery && (!activeFilter || clinicMatchesFilter(clinic, activeFilter));
-  }), [activeFilter, query]);
+  useEffect(() => {
+    async function loadClinics() {
+      try {
+        setIsLoadingClinics(true);
+        const data = await getClinicsService();
+        setClinics(data || []);
+        
+        if (data && data.length > 0) {
+          setSelectedClinicId(data[0].id);
+        }
+      } catch (error: any) {
+        Alert.alert('Erro', error.message || 'Não foi possível carregar as clínicas.');
+      } finally {
+        setIsLoadingClinics(false);
+      }
+    }
+
+    loadClinics();
+  }, []);
+
+  const filteredClinics = useMemo(() => {
+    return clinics.filter((clinic) => {
+      const normalizedQuery = query.trim().toLowerCase();
+      const matchesQuery = !normalizedQuery || 
+        clinic.name?.toLowerCase().includes(normalizedQuery) || 
+        (clinic.specialties && clinic.specialties.some((specialty) => specialty.toLowerCase().includes(normalizedQuery)));
+      return matchesQuery && (!activeFilter || clinicMatchesFilter(clinic, activeFilter));
+    });
+  }, [clinics, activeFilter, query]);
 
   const selectedClinic = filteredClinics.find((clinic) => clinic.id === selectedClinicId) ?? filteredClinics[0];
 
   // 🔹 Função para solicitar permissão de localização e simular a rota
   const handleRouteRequest = async () => {
     try {
-      // 1. Solicita autorização do usuário para acessar a localização
       const { status } = await Location.requestForegroundPermissionsAsync();
       
       if (status !== 'granted') {
@@ -82,7 +81,6 @@ export default function ClinicSearchScreen() {
         return;
       }
 
-      // 2. Simula a traçada de rota com o Waze/Maps (mantendo a lógica original do Toast)
       setIsToastVisible(true);
       setTimeout(() => setIsToastVisible(false), 2400);
     } catch (error) {
@@ -144,7 +142,6 @@ export default function ClinicSearchScreen() {
       );
       setIsAppointmentModalVisible(false);
       
-      // Limpar campos
       setAppointmentDate('');
       setAppointmentTime('');
       setSelectedSpecialty('');
@@ -209,26 +206,41 @@ export default function ClinicSearchScreen() {
             <View style={styles.mapLine4} />
             <View style={styles.mapLine5} />
             <View style={styles.mapBadge}>
-              <Text style={styles.mapBadgeText}>Clínicas próximas</Text>
+              <Text style={styles.mapBadgeText}>Clínicas cadastradas</Text>
             </View>
             <View style={styles.locationBadge}>
               <Ionicons name="locate-outline" size={15} color="#185A43" />
-              <Text style={styles.locationBadgeText}>Sua localização</Text>
+              <Text style={styles.locationBadgeText}>Rede Credenciada</Text>
             </View>
-            {filteredClinics.map((clinic) => {
+            
+            {/* 🔹 Exibe os pins de forma segura na tela, distribuindo caso não venham coordenadas de porcentagem */}
+            {filteredClinics.map((clinic, index) => {
               const isSelected = selectedClinic?.id === clinic.id;
+              
+              // Se a API não mandar coordenadas de layout válidas (0-100), distribui os pins automaticamente no mapa ilustrativo
+              const fallbackLeft = 20 + (index * 25) % 65;
+              const fallbackTop = 30 + (index * 20) % 50;
+
+              const leftPos = (clinic.coordinates?.longitude !== undefined && clinic.coordinates?.longitude >= 0 && clinic.coordinates?.longitude <= 100) 
+                ? clinic.coordinates.longitude 
+                : fallbackLeft;
+                
+              const topPos = (clinic.coordinates?.latitude !== undefined && clinic.coordinates?.latitude >= 0 && clinic.coordinates?.latitude <= 100) 
+                ? clinic.coordinates.latitude 
+                : fallbackTop;
+
               return (
                 <TouchableOpacity
-                  key={clinic.id}
+                  key={clinic.id ?? index}
                   activeOpacity={0.7}
-                  style={[styles.pinContainer, { left: `${clinic.coordinates.longitude}%`, top: `${clinic.coordinates.latitude}%` }]}
+                  style={[styles.pinContainer, { left: `${leftPos}%`, top: `${topPos}%` }]}
                   onPress={() => setSelectedClinicId(clinic.id)}
                 >
                   <View style={[styles.pinIconWrapper, isSelected ? styles.pinSelected : styles.pinUnselected]}>
                     <Ionicons name="paw" size={19} color="#FFFFFF" />
                   </View>
                   <View style={styles.pinDistanceBadge}>
-                    <Text style={styles.pinDistanceText}>{clinic.distance}</Text>
+                    <Text style={styles.pinDistanceText}>{clinic.distance ?? 'Parceiro'}</Text>
                   </View>
                 </TouchableOpacity>
               );
@@ -244,7 +256,9 @@ export default function ClinicSearchScreen() {
           {activeFilter ? <TouchableOpacity activeOpacity={0.7} onPress={() => setActiveFilter(null)}><Text style={styles.clearFilterText}>Limpar filtro</Text></TouchableOpacity> : null}
         </View>
 
-        {selectedClinic ? (
+        {isLoadingClinics ? (
+          <View style={styles.emptyCard}><Text style={styles.emptyText}>Carregando clínicas...</Text></View>
+        ) : selectedClinic ? (
           <View style={styles.cardWrapper}>
             <ClinicCard 
               clinic={selectedClinic} 
@@ -265,7 +279,6 @@ export default function ClinicSearchScreen() {
         </View>
       ) : null}
 
-      {/* 🔹 Modal com suporte a subida do teclado (KeyboardAvoidingView) */}
       <Modal
         visible={isAppointmentModalVisible}
         animationType="fade"
@@ -299,33 +312,31 @@ export default function ClinicSearchScreen() {
                 />
               </View>
 
-             {/* Campo Data da Consulta */}
-    <View style={styles.inputGroup}>
-  <Text style={styles.inputLabel}>Data da consulta</Text>
-  <TextInput
-    style={styles.textInput}
-    value={appointmentDate}
-    onChangeText={(text) => setAppointmentDate(formatDateMask(text))} // 👈 Aplica a máscara
-    placeholder="DD/MM/AAAA"
-    placeholderTextColor="#7E9F8E"
-    keyboardType="numeric"
-    maxLength={10} // 👈 Limita o tamanho máximo da string formatada
-  />
-</View>
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Data da consulta</Text>
+                <TextInput
+                  style={styles.textInput}
+                  value={appointmentDate}
+                  onChangeText={(text) => setAppointmentDate(formatDateMask(text))}
+                  placeholder="DD/MM/AAAA"
+                  placeholderTextColor="#7E9F8E"
+                  keyboardType="numeric"
+                  maxLength={10}
+                />
+              </View>
 
-{/* Campo Horário */}
-<View style={styles.inputGroup}>
-  <Text style={styles.inputLabel}>Horário</Text>
-  <TextInput
-    style={styles.textInput}
-    value={appointmentTime}
-    onChangeText={(text) => setAppointmentTime(formatTimeMask(text))} // 👈 Aplica a máscara
-    placeholder="HH:MM"
-    placeholderTextColor="#7E9F8E"
-    keyboardType="numeric"
-    maxLength={5} // 👈 Limita o tamanho máximo (HH:MM)
-  />
-</View>
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Horário</Text>
+                <TextInput
+                  style={styles.textInput}
+                  value={appointmentTime}
+                  onChangeText={(text) => setAppointmentTime(formatTimeMask(text))}
+                  placeholder="HH:MM"
+                  placeholderTextColor="#7E9F8E"
+                  keyboardType="numeric"
+                  maxLength={5}
+                />
+              </View>
 
               <View style={styles.inputGroup}>
                 <Text style={styles.inputLabel}>Observações (Opcional)</Text>
@@ -653,7 +664,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FFFFFF',
   },
-  // Estilos do Modal com suporte a ajuste de teclado
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -664,7 +674,7 @@ const styles = StyleSheet.create({
   modalContent: {
     width: '100%',
     maxWidth: 420,
-    maxHeight: '90%', // Garante que o modal não estoure a tela verticalmente quando o teclado abrir
+    maxHeight: '90%',
     backgroundColor: '#FFFFFF',
     borderRadius: 24,
     padding: 20,

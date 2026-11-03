@@ -6,10 +6,14 @@ import type { Clinic } from '../types/interfaces';
 type ClinicCardProps = {
   clinic: Clinic;
   onRoute: () => void;
-  onSchedule: () => void; // 🔹 Nova propriedade para abrir o modal
+  onSchedule: () => void;
 };
 
 export default function ClinicCard({ clinic, onRoute, onSchedule }: ClinicCardProps) {
+  // 🔹 Proteção contra arrays nulos vindos da API Java
+  const specialties = clinic.specialties ?? [];
+  const accessibility = clinic.accessibility ?? [];
+
   return (
     <View style={styles.card}>
       <View style={styles.header}>
@@ -17,32 +21,38 @@ export default function ClinicCard({ clinic, onRoute, onSchedule }: ClinicCardPr
           <Text style={styles.clinicName}>{clinic.name}</Text>
           <View style={styles.locationContainer}>
             <Ionicons name="location-outline" size={15} color="#7E9F8E" />
-            <Text style={styles.locationText}>{clinic.distance} · {clinic.address}</Text>
+            <Text style={styles.locationText}>
+              {clinic.distance ?? 'Próximo'} {clinic.address ? `· ${clinic.address}` : ''}
+            </Text>
           </View>
         </View>
-        <View style={styles.ratingBadge}>
-          <Ionicons name="star" size={13} color="#DFB461" />
-          <Text style={styles.ratingText}>{clinic.rating}</Text>
-        </View>
+        {clinic.rating !== undefined && clinic.rating !== null ? (
+          <View style={styles.ratingBadge}>
+            <Ionicons name="star" size={13} color="#DFB461" />
+            <Text style={styles.ratingText}>{clinic.rating}</Text>
+          </View>
+        ) : null}
       </View>
 
       <View style={styles.tagsContainer}>
-        {clinic.specialties.map((specialty) => (
-          <View key={specialty} style={styles.specialtyBadge}>
+        {specialties.map((specialty, index) => (
+          <View key={`${specialty}-${index}`} style={styles.specialtyBadge}>
             <Text style={styles.specialtyText}>{specialty}</Text>
           </View>
         ))}
-        {clinic.accessibility.map((item) => (
-          <View key={item} style={styles.accessibilityBadge}>
+        {accessibility.map((item, index) => (
+          <View key={`${item}-${index}`} style={styles.accessibilityBadge}>
             <Text style={styles.accessibilityText}>{item}</Text>
           </View>
         ))}
       </View>
 
-      <View style={styles.phoneContainer}>
-        <Ionicons name="call-outline" size={15} color="#7E9F8E" />
-        <Text style={styles.phoneText}>{clinic.phone}</Text>
-      </View>
+      {clinic.phone ? (
+        <View style={styles.phoneContainer}>
+          <Ionicons name="call-outline" size={15} color="#7E9F8E" />
+          <Text style={styles.phoneText}>{clinic.phone}</Text>
+        </View>
+      ) : null}
 
       <View style={styles.actionsContainer}>
         <TouchableOpacity activeOpacity={0.75} style={[styles.button, styles.primaryButton]} onPress={onSchedule}>

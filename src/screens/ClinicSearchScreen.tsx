@@ -1,37 +1,156 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import * as Location from 'expo-location';
+import { useEffect, useMemo, useState } from 'react';
+import { Alert, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import ClinicCard from '../components/ClinicCard';
-import { partnerClinics } from '../mocks/mockData';
 import type { Clinic } from '../types/interfaces';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { parseAppointmentDate, scheduleAppointmentReminder } from '../services/notificationService';
+import { getClinicsService } from '../services/eloPetService';
+import { formatDateMask, formatTimeMask } from '../utils/functions';
 
-const filters = ['Ortopedia', 'Cardiologia', 'Até 5km', 'Acessibilidade'];
+const filters = ['Ortopedia', 'Cardiologia', 'Clinica Geral','Dermatologia','Acessibilidade'];
 
 function clinicMatchesFilter(clinic: Clinic, filter: string) {
-  if (filter === 'Até 5km') return clinic.distanceKm <= 5;
-  if (filter === 'Acessibilidade') return clinic.accessibility.length > 0;
-  return clinic.specialties.includes(filter);
+  if (filter === 'Acessibilidade') return clinic.accessibility && clinic.accessibility.length > 0;
+  return clinic.specialties && clinic.specialties.includes(filter);
 }
 
 export default function ClinicSearchScreen() {
   const [query, setQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
-  const [selectedClinicId, setSelectedClinicId] = useState(partnerClinics[0].id);
+  
+  // 🔹 Estados para gerenciar as clínicas vindas da API Java
+  const [clinics, setClinics] = useState<Clinic[]>([]);
+  const [isLoadingClinics, setIsLoadingClinics] = useState(true);
+  
+  const [selectedClinicId, setSelectedClinicId] = useState<string | number | null>(null);
   const [isToastVisible, setIsToastVisible] = useState(false);
 
-  const filteredClinics = useMemo(() => partnerClinics.filter((clinic) => {
-    const normalizedQuery = query.trim().toLowerCase();
-    const matchesQuery = !normalizedQuery || clinic.name.toLowerCase().includes(normalizedQuery) || clinic.specialties.some((specialty) => specialty.toLowerCase().includes(normalizedQuery));
-    return matchesQuery && (!activeFilter || clinicMatchesFilter(clinic, activeFilter));
-  }), [activeFilter, query]);
+  // 🔹 Estados para controlar o Modal de Agendamento
+  const [isAppointmentModalVisible, setIsAppointmentModalVisible] = useState(false);
+  const [selectedSpecialty, setSelectedSpecialty] = useState('');
+  const [appointmentDate, setAppointmentDate] = useState('');
+  const [appointmentTime, setAppointmentTime] = useState('');
+  const [appointmentNotes, setAppointmentNotes] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    async function loadClinics() {
+      try {
+        setIsLoadingClinics(true);
+        const data = await getClinicsService();
+        setClinics(data || []);
+        
+        if (data && data.length > 0) {
+          setSelectedClinicId(data[0].id);
+        }
+      } catch (error: any) {
+        Alert.alert('Erro', error.message || 'Não foi possível carregar as clínicas.');
+      } finally {
+        setIsLoadingClinics(false);
+      }
+    }
+
+    loadClinics();
+  }, []);
+
+  const filteredClinics = useMemo(() => {
+    return clinics.filter((clinic) => {
+      const normalizedQuery = query.trim().toLowerCase();
+      const matchesQuery = !normalizedQuery || 
+        clinic.name?.toLowerCase().includes(normalizedQuery) || 
+        (clinic.specialties && clinic.specialties.some((specialty) => specialty.toLowerCase().includes(normalizedQuery)));
+      return matchesQuery && (!activeFilter || clinicMatchesFilter(clinic, activeFilter));
+    });
+  }, [clinics, activeFilter, query]);
 
   const selectedClinic = filteredClinics.find((clinic) => clinic.id === selectedClinicId) ?? filteredClinics[0];
 
-  const showRouteToast = () => {
-    setIsToastVisible(true);
-    setTimeout(() => setIsToastVisible(false), 2400);
+  // 🔹 Função para solicitar permissão de localização e simular a rota
+  const handleRouteRequest = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permissão negada',
+          'Precisamos da sua permissão de localização para calcular e traçar a rota até a clínica.'
+        );
+        return;
+      }
+
+      setIsToastVisible(true);
+      setTimeout(() => setIsToastVisible(false), 2400);
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível obter a permissão de localização.');
+    }
+  };
+
+  // 🔹 Função para lidar com o envio do agendamento
+  const handleConfirmAppointment = async () => {
+    if (!appointmentDate || !appointmentTime || !selectedSpecialty) {
+      Alert.alert('Atenção', 'Preencha a especialidade, data e horário desejados.');
+      return;
+    }
+
+    const appointmentAt = parseAppointmentDate(appointmentDate, appointmentTime);
+    if (!appointmentAt || appointmentAt.getTime() <= Date.now()) {
+      Alert.alert(
+        'Data ou horário inválido',
+        'Informe uma data futura no formato DD/MM/AAAA e um horário válido no formato HH:MM.'
+      );
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      let reminderMessage = '';
+      try {
+        if (!selectedClinic) {
+          throw new Error('Nenhuma clínica foi selecionada para a consulta.');
+        }
+
+        const reminder = await scheduleAppointmentReminder({
+          appointmentDate: appointmentAt,
+          clinicName: selectedClinic.name,
+          specialty: selectedSpecialty.trim(),
+        });
+
+        if (reminder) {
+          const reminderTime = reminder.reminderDate.toLocaleString('pt-BR', {
+            dateStyle: 'short',
+            timeStyle: 'short',
+          });
+          reminderMessage = ` Um lembrete foi programado para ${reminderTime}.`;
+        } else {
+          reminderMessage = ' Ative as notificações no Perfil para receber lembretes.';
+        }
+      } catch (notificationError) {
+        console.error('Erro ao programar o lembrete da consulta:', notificationError);
+        reminderMessage = notificationError instanceof Error
+          ? ` Não foi possível programar o lembrete: ${notificationError.message}`
+          : ' Não foi possível programar o lembrete da consulta.';
+      }
+
+      Alert.alert(
+        'Consulta agendada',
+        `Consulta agendada com sucesso na clínica ${selectedClinic?.name}.${reminderMessage}`
+      );
+      setIsAppointmentModalVisible(false);
+      
+      setAppointmentDate('');
+      setAppointmentTime('');
+      setSelectedSpecialty('');
+      setAppointmentNotes('');
+    } catch (error: any) {
+      Alert.alert('Erro', error.message || 'Não foi possível concluir o agendamento.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -87,26 +206,41 @@ export default function ClinicSearchScreen() {
             <View style={styles.mapLine4} />
             <View style={styles.mapLine5} />
             <View style={styles.mapBadge}>
-              <Text style={styles.mapBadgeText}>Clínicas próximas</Text>
+              <Text style={styles.mapBadgeText}>Clínicas cadastradas</Text>
             </View>
             <View style={styles.locationBadge}>
               <Ionicons name="locate-outline" size={15} color="#185A43" />
-              <Text style={styles.locationBadgeText}>Sua localização</Text>
+              <Text style={styles.locationBadgeText}>Rede Credenciada</Text>
             </View>
-            {filteredClinics.map((clinic) => {
+            
+            {/* 🔹 Exibe os pins de forma segura na tela, distribuindo caso não venham coordenadas de porcentagem */}
+            {filteredClinics.map((clinic, index) => {
               const isSelected = selectedClinic?.id === clinic.id;
+              
+              // Se a API não mandar coordenadas de layout válidas (0-100), distribui os pins automaticamente no mapa ilustrativo
+              const fallbackLeft = 20 + (index * 25) % 65;
+              const fallbackTop = 30 + (index * 20) % 50;
+
+              const leftPos = (clinic.coordinates?.longitude !== undefined && clinic.coordinates?.longitude >= 0 && clinic.coordinates?.longitude <= 100) 
+                ? clinic.coordinates.longitude 
+                : fallbackLeft;
+                
+              const topPos = (clinic.coordinates?.latitude !== undefined && clinic.coordinates?.latitude >= 0 && clinic.coordinates?.latitude <= 100) 
+                ? clinic.coordinates.latitude 
+                : fallbackTop;
+
               return (
                 <TouchableOpacity
-                  key={clinic.id}
+                  key={clinic.id ?? index}
                   activeOpacity={0.7}
-                  style={[styles.pinContainer, { left: `${clinic.coordinates.longitude}%`, top: `${clinic.coordinates.latitude}%` }]}
+                  style={[styles.pinContainer, { left: `${leftPos}%`, top: `${topPos}%` }]}
                   onPress={() => setSelectedClinicId(clinic.id)}
                 >
                   <View style={[styles.pinIconWrapper, isSelected ? styles.pinSelected : styles.pinUnselected]}>
                     <Ionicons name="paw" size={19} color="#FFFFFF" />
                   </View>
                   <View style={styles.pinDistanceBadge}>
-                    <Text style={styles.pinDistanceText}>{clinic.distance}</Text>
+                    <Text style={styles.pinDistanceText}>{clinic.distance ?? 'Parceiro'}</Text>
                   </View>
                 </TouchableOpacity>
               );
@@ -122,8 +256,21 @@ export default function ClinicSearchScreen() {
           {activeFilter ? <TouchableOpacity activeOpacity={0.7} onPress={() => setActiveFilter(null)}><Text style={styles.clearFilterText}>Limpar filtro</Text></TouchableOpacity> : null}
         </View>
 
-        {selectedClinic ? <View style={styles.cardWrapper}><ClinicCard clinic={selectedClinic} onRoute={showRouteToast} /></View> : <View style={styles.emptyCard}><Text style={styles.emptyText}>Nenhuma clínica encontrada.</Text></View>}
+        {isLoadingClinics ? (
+          <View style={styles.emptyCard}><Text style={styles.emptyText}>Carregando clínicas...</Text></View>
+        ) : selectedClinic ? (
+          <View style={styles.cardWrapper}>
+            <ClinicCard 
+              clinic={selectedClinic} 
+              onRoute={handleRouteRequest} 
+              onSchedule={() => setIsAppointmentModalVisible(true)}
+            />
+          </View>
+        ) : (
+          <View style={styles.emptyCard}><Text style={styles.emptyText}>Nenhuma clínica encontrada.</Text></View>
+        )}
       </ScrollView>
+
       {isToastVisible ? (
         <View style={styles.toastContainer}>
           <Ionicons name="navigate" size={18} color="#A3D9C9" />
@@ -131,6 +278,101 @@ export default function ClinicSearchScreen() {
           <Ionicons name="checkmark-circle" size={18} color="#A3D9C9" />
         </View>
       ) : null}
+
+      <Modal
+        visible={isAppointmentModalVisible}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => setIsAppointmentModalVisible(false)}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.modalOverlay}
+        >
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <View>
+                <Text style={styles.modalTitle}>Agendar Consulta</Text>
+                <Text style={styles.modalSubtitle}>{selectedClinic?.name}</Text>
+              </View>
+              <TouchableOpacity onPress={() => setIsAppointmentModalVisible(false)} style={styles.closeButton}>
+                <Ionicons name="close" size={20} color="#185A43" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView contentContainerStyle={styles.modalFormContent} showsVerticalScrollIndicator={false}>
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Especialidade</Text>
+                <TextInput
+                  style={styles.textInput}
+                  value={selectedSpecialty}
+                  onChangeText={setSelectedSpecialty}
+                  placeholder="Ex: Ortopedia, Clínica Geral..."
+                  placeholderTextColor="#7E9F8E"
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Data da consulta</Text>
+                <TextInput
+                  style={styles.textInput}
+                  value={appointmentDate}
+                  onChangeText={(text) => setAppointmentDate(formatDateMask(text))}
+                  placeholder="DD/MM/AAAA"
+                  placeholderTextColor="#7E9F8E"
+                  keyboardType="numeric"
+                  maxLength={10}
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Horário</Text>
+                <TextInput
+                  style={styles.textInput}
+                  value={appointmentTime}
+                  onChangeText={(text) => setAppointmentTime(formatTimeMask(text))}
+                  placeholder="HH:MM"
+                  placeholderTextColor="#7E9F8E"
+                  keyboardType="numeric"
+                  maxLength={5}
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={styles.inputLabel}>Observações (Opcional)</Text>
+                <TextInput
+                  style={[styles.textInput, { height: 80, textAlignVertical: 'top' }]}
+                  value={appointmentNotes}
+                  onChangeText={setAppointmentNotes}
+                  placeholder="Descreva brevemente o sintoma ou necessidade do pet"
+                  placeholderTextColor="#7E9F8E"
+                  multiline
+                />
+              </View>
+
+              <View style={styles.modalButtonRow}>
+                <TouchableOpacity
+                  style={styles.cancelButton}
+                  activeOpacity={0.75}
+                  onPress={() => setIsAppointmentModalVisible(false)}
+                  disabled={isLoading}
+                >
+                  <Text style={styles.cancelButtonText}>Cancelar</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.saveButton, isLoading && { opacity: 0.7 }]}
+                  activeOpacity={0.75}
+                  onPress={handleConfirmAppointment}
+                  disabled={isLoading}
+                >
+                  <Text style={styles.saveButtonText}>{isLoading ? 'Agendando...' : 'Confirmar'}</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -420,6 +662,109 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    width: '100%',
+    maxWidth: 420,
+    maxHeight: '90%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 20,
+    shadowColor: '#185A43',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 5,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(126, 159, 142, 0.15)',
+    paddingBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#185A43',
+  },
+  modalSubtitle: {
+    fontSize: 12,
+    color: '#7E9F8E',
+    marginTop: 2,
+  },
+  closeButton: {
+    height: 36,
+    width: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(163, 217, 201, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalFormContent: {
+    paddingBottom: 10,
+  },
+  inputGroup: {
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#185A43',
+    marginBottom: 6,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: 'rgba(126, 159, 142, 0.3)',
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 14,
+    color: '#185A43',
+    backgroundColor: '#F8FAFC',
+  },
+  modalButtonRow: {
+    zIndex: 1,
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 8,
+  },
+  cancelButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(126, 159, 142, 0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  cancelButtonText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#7E9F8E',
+  },
+  saveButton: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 12,
+    backgroundColor: '#185A43',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  saveButtonText: {
+    fontSize: 14,
+    fontWeight: 'bold',
     color: '#FFFFFF',
   },
 });

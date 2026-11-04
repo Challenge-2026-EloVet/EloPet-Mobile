@@ -17,8 +17,6 @@ export default function HomeScreen() {
   const navigation = useNavigation<any>();
   const [selectedPet, setSelectedPet] = useState<any>(null);
 
-  // JAVA SERVICE
-
   const handleCurrentUserId = async () => {
     try {
       const userId = await getStoredUserId();
@@ -88,33 +86,75 @@ export default function HomeScreen() {
     }
   };
 
-  // Query para buscar o prontuário sempre que o selectedPet mudar
   const { data: prontuaryData, isLoading: isLoadingProntuary } = useQuery({
     queryKey: ['prontuary', selectedPet?.idPet],
     queryFn: () => handlePetProntuary(selectedPet?.idPet),
     enabled: !!selectedPet?.idPet,
   });
 
-  // Geração dinâmica de estatísticas e tarefas baseadas no Firestore ou valores padrão caso o prontuário esteja vazio
   const quickStats = [
     { label: 'Idade Aprox.', value: prontuaryData?.pet?.idadeAproximada ? `${prontuaryData.pet.idadeAproximada} anos` : 'N/D', icon: 'calendar-outline' },
     { label: 'Espécie', value: prontuaryData?.pet?.especie || 'N/D', icon: 'paw-outline' },
     { label: 'Raça', value: prontuaryData?.pet?.raca || 'N/D', icon: 'information-outline' },
-  ];
+  ] as const;
 
-  // Mapeia consultas e exames do Firestore para a lista de tarefas/cuidados, se existirem
+  // Função auxiliar para extrair o objeto 'detalhes' da estrutura do Firebase
+  const getDetalhesProntuario = () => {
+    if (!prontuaryData) return null;
+
+    if (Array.isArray(prontuaryData.consultas) && prontuaryData.consultas.length > 0) {
+      const primeiraConsulta = prontuaryData.consultas[0];
+      return primeiraConsulta?.consulta?.detalhes || primeiraConsulta?.detalhes || primeiraConsulta;
+    }
+
+    if (prontuaryData.consultas?.consulta?.detalhes) {
+      return prontuaryData.consultas.consulta.detalhes;
+    }
+
+    if (prontuaryData.consultas?.detalhes) {
+      return prontuaryData.consultas.detalhes;
+    }
+
+    return prontuaryData;
+  };
+
+  const detalhes = getDetalhesProntuario();
+
   const careTasks = [
-    ...(prontuaryData?.consultas || []).map((consulta: any, index: number) => ({
-      id: `consulta-${index}`,
-      label: typeof consulta === 'string' && consulta !== '' ? consulta : `Consulta agendada/realizada`,
-      category: 'clinical',
+    ...(Array.isArray(detalhes?.tratamentoPrescrito)
+      ? detalhes.tratamentoPrescrito
+      : typeof detalhes?.tratamentoPrescrito === 'string'
+      ? [detalhes.tratamentoPrescrito]
+      : []
+    ).map((item: string, index: number) => ({
+      id: `tratamento-${index}`,
+      label: item,
+      category: 'treatment',
       icon: 'medkit-outline',
     })),
-    ...(prontuaryData?.exames || []).map((exame: any, index: number) => ({
-      id: `exame-${index}`,
-      label: typeof exame === 'string' && exame !== '' ? exame : `Exame pendente/realizado`,
+
+    ...(Array.isArray(detalhes?.rotinaPreventiva)
+      ? detalhes.rotinaPreventiva
+      : typeof detalhes?.rotinaPreventiva === 'string'
+      ? [detalhes.rotinaPreventiva]
+      : []
+    ).map((item: string, index: number) => ({
+      id: `preventiva-${index}`,
+      label: item,
       category: 'preventive',
-      icon: 'clipboard-text-outline',
+      icon: 'paw-outline',
+    })),
+
+    ...(Array.isArray(detalhes?.exames)
+      ? detalhes.exames
+      : typeof detalhes?.exames === 'string' && detalhes.exames.trim() !== ''
+      ? [detalhes.exames]
+      : []
+    ).map((exame: string, index: number) => ({
+      id: `exame-${index}`,
+      label: exame,
+      category: 'exams',
+      icon: 'clipboard-outline',
     })),
   ];
 
@@ -198,7 +238,9 @@ export default function HomeScreen() {
           </View>
 
           <Header pet={selectedPet} />
-          <RiskScoreCard pet={selectedPet} />
+          
+          {/* Consulta do score do Firebase passada para o card */}
+          <RiskScoreCard pet={selectedPet} scoreData={prontuaryData?.score} />
 
           <View style={styles.sectionHeaderContainer}>
             <View>
@@ -241,15 +283,6 @@ const styles = StyleSheet.create({
   },
   selectorTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#185A43',
-  },
-  selectorSubtitle: {
-    fontSize: 13,
-    color: '#7E9F8E',
-    marginTop: 2,
-  },
-  highlightPetName: {
     fontWeight: 'bold',
     color: '#185A43',
   },

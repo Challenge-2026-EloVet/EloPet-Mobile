@@ -69,6 +69,9 @@ function TaskSection({
   completedTasks: Record<string, boolean>;
   onToggle: (taskId: string) => void;
 }) {
+  // Se não houver tarefas, não exibe esta seção
+  if (!tasks || tasks.length === 0) return null;
+
   return (
     <View style={styles.sectionContainer}>
       <View style={styles.sectionHeader}>
@@ -95,16 +98,18 @@ export default function TodoList({ tasks }: { tasks: TodoItem[] }) {
   const toggleTask = (taskId: string) =>
     setCompletedTasks((current) => ({ ...current, [taskId]: !current[taskId] }));
     
-  const clinical = tasks.filter((task) => task.category === 'clinical');
-  const preventive = tasks.filter((task) => task.category === 'preventive');
+  const treatment = tasks.filter((task) => String(task.category) === 'treatment');
+  const preventive = tasks.filter((task) => String(task.category) === 'preventive');
+  const exams = tasks.filter((task) => String(task.category) === 'exams');
+
   const completedCount = Object.values(completedTasks).filter(Boolean).length;
 
   return (
     <View style={styles.listContainer}>
       <View style={styles.listHeader}>
         <View>
-          <Text style={styles.listTitle}>Cuidados de hoje</Text>
-          <Text style={styles.listSubtitle}>Pequenos cuidados, grandes resultados </Text>
+          <Text style={styles.listTitle}>Cuidados da consulta</Text>
+          <Text style={styles.listSubtitle}>Pequenos cuidados, grandes resultados</Text>
         </View>
         <View style={styles.counterBadge}>
           <Text style={styles.counterText}>
@@ -114,16 +119,23 @@ export default function TodoList({ tasks }: { tasks: TodoItem[] }) {
       </View>
       
       <TaskSection
-        title="💊 Tratamento Prescrito"
+        title="Tratamento Prescrito"
         icon="medkit-outline"
-        tasks={clinical}
+        tasks={treatment}
         completedTasks={completedTasks}
         onToggle={toggleTask}
       />
       <TaskSection
-        title="🌿 Rotina Preventiva"
+        title="Rotina Preventiva"
         icon="paw-outline"
         tasks={preventive}
+        completedTasks={completedTasks}
+        onToggle={toggleTask}
+      />
+      <TaskSection
+        title="Exames"
+        icon="clipboard-outline"
+        tasks={exams}
         completedTasks={completedTasks}
         onToggle={toggleTask}
       />
@@ -132,7 +144,6 @@ export default function TodoList({ tasks }: { tasks: TodoItem[] }) {
 }
 
 const styles = StyleSheet.create({
-  // TodoListCuidados Styles
   listContainer: {
     marginHorizontal: 20,
     marginTop: 36,
@@ -167,8 +178,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#A3D9C9',
   },
-
-  // TaskSection Styles
   sectionContainer: {
     marginBottom: 20,
   },
@@ -191,8 +200,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#185A43',
   },
-
-  // TaskRow Styles
   taskRowBase: {
     marginBottom: 12,
     flexDirection: 'row',
@@ -209,7 +216,6 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(126, 159, 142, 0.25)',
     backgroundColor: '#FFFFFF',
   },
-  
   iconWrapperBase: {
     marginRight: 12,
     height: 40,
@@ -224,7 +230,6 @@ const styles = StyleSheet.create({
   iconWrapperPending: {
     backgroundColor: 'rgba(163, 217, 201, 0.45)',
   },
-  
   taskTextBase: {
     flex: 1,
     paddingRight: 12,
@@ -240,7 +245,6 @@ const styles = StyleSheet.create({
   taskTextPending: {
     color: '#185A43',
   },
-  
   checkboxBase: {
     height: 24,
     width: 24,

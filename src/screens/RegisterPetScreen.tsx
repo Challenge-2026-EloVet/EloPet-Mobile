@@ -36,24 +36,35 @@ export default function RegisterPetScreen({ route, navigation }: { route?: any; 
   const [castrationFlag, setCastrationFlag] = useState<number>(petParam?.flagCastrado ?? 0);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Função auxiliare para sincronizar os dados do pet no Firebase (coleção prontuários)
   const syncPetToFirebaseProntuary = async (petId: number | string, petPayload: any) => {
     try {
       const q = query(collection(db, 'prontuarios'), where('pet.petId', '==', petId));
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        // Se já existe um prontuário para este pet, atualiza apenas o objeto map 'pet'
         const docRef = querySnapshot.docs[0].ref;
         await updateDoc(docRef, {
           pet: petPayload,
         });
       } else {
-        // Se ainda não existe prontuário para este pet, cria um novo documento inicializando consultas e exames vazios
         await addDoc(collection(db, 'prontuarios'), {
           pet: petPayload,
-          consultas: [],
-          exames: [],
+          consultas: {
+            consulta: {
+              detalhes: {
+                consultaID: 1,
+                exames: [],
+                rotinaPreventiva: [],
+                tratamentoPrescrito: [],
+              }
+            }
+          },
+          score: {
+            categoria: 'Estável',
+            observacao: 'Pet recém-cadastrado',
+            recomendacao: 'Mantenha os exames e rotinas em dia.',
+            valor: 10
+          }
         });
       }
     } catch (firebaseError) {

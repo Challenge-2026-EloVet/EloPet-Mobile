@@ -199,4 +199,13 @@ export const deletePetService = async (idPetResponsavel) => {
   }
 };
 
-
+// JAVA SERVICE para buscar clinicas
+export const getClinicsService = async () => {
+  try {
+    const response = await axios.get(`${process.env.EXPO_PUBLIC_API_JAVA_CLINICAS}`);
+    return response.data;
+  } catch (error) {
+    console.error('Erro no getClinicsService:', error);
+    throw new Error(error.response?.data?.message || 'Erro ao buscar a lista de clinicas.');
+  }
+};

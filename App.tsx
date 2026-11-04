@@ -1,8 +1,8 @@
-import { StatusBar } from 'react-native';
+import { ActivityIndicator, Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import * as Notifications from 'expo-notifications';
 
 import { AuthProvider, useAuth } from './src/context/AuthProvider';
 import Login from './src/screens/Login';
@@ -12,6 +12,17 @@ import RegisterPetScreen from './src/screens/RegisterPetScreen';
 
 const Stack = createNativeStackNavigator();
 const queryClient = new QueryClient();
+
+if (Platform.OS !== 'web') {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
+}
 
 //Criei essa função pq o após a autenticação dentro do Contexto nao tava redirecionando pro app
 function AppNavigator() {
@@ -66,3 +77,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
   },
 });
+
+// PROJETO FINALIZADO, PENDENTE CHECK DO JOAO

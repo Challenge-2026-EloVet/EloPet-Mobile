@@ -14,7 +14,10 @@ O **EloPet** é um projeto acadêmico desenvolvido com o objetivo de facilitar a
 
 O projeto foi construído utilizando tecnologias modernas do ecossistema React Native:
 
-*   **Framework:** [React Native](https://reactnative.dev/) (v0.86.3) com [Expo](https://expo.dev/) (~57.0.20)
+*   **Framework:** [React Native](https://reactnative.dev/) (v0.86.3) com [Expo](https://expo.dev/) (~58.0.00)
+*   **Banco de Dados & Armazenamento:** [Firebase Firestore](https://firebase.google.com/docs/firestore) para gerenciamento em tempo real do prontuário dos pets.
+*   **Notificações:** Módulo integrado para envio de alertas e notificações push.
+*   **Geolocalização & Mapas:** Permissões de localização do usuário para simulação de uso do Waze e cálculo de rotas até as clínicas.
 *   **Navegação:** [React Navigation](https://reactnavigation.org/) (Bottom Tabs e Native Stack v7)
 *   **Gerenciamento de Estado e Cache:** [TanStack React Query](https://tanstack.com/query) (v5)
 *   **Requisições HTTP:** [Axios](https://axios-http.com/)
@@ -45,23 +48,32 @@ A aplicação está estruturada em fluxos modulares organizados para proporciona
 5.  **`ClinicSearchScreen.tsx`:**
     *   Busca interativa por clínicas parceiras na rede credencionada.
     *   Filtros por especialidades (Ortopedia, Cardiologia, Acessibilidade) e distância.
-    *   Mapa interativo simulado com pinos de localização e simulação de traçado de rotas.
+    *   Mapa interativo simulado com pinos de localização, solicitação de permissão de geolocalização do usuário e simulação de uso do Waze para traçado de rotas.
 6.  **`ChatScreen.tsx`:**
     *   Canal de atendimento com o "Assistente Elo Vet".
     *   Respostas rápidas interativas para relatar o apetite, nível de energia e bem-estar diário do pet.
 
 ---
 
-## ⚙️ Arquitetura de Serviços (`eloPetService.js`)
+## ⚙️ Arquitetura de Serviços e Dados
 
-A camada de serviços centraliza a comunicação com a API backend em Java, implementando:
-*   Configuração dinâmica de cabeçalhos de autorização (`Bearer Token`).
-*   Gerenciamento multiplataforma de tokens (`SecureStore` para dispositivos móveis e `localStorage` para web).
-*   Endpoints isolados para Autenticação, Gestão de Usuário/Responsável e CRUD completo de Pets.
+A camada de serviços centraliza a comunicação com a API backend e os serviços em nuvem:
+*   **Backend Java:** Configuração dinâmica de cabeçalhos de autorização (`Bearer Token`), endpoints isolados para Autenticação, Gestão de Usuário/Responsável e CRUD de Pets.
+*   **Firebase Firestore:** Utilizado para armazenamento estruturado e sincronização em tempo real do prontuário detalhado dos pets (histórico médico, vacinas e ocorrências).
+*   **Notificações Push:** Implementação de avisos para lembrar o tutor sobre horários de medicamentos, consultas e cuidados diários.
 
 ---
 
-## 🚀 Como Executar o Projeto
+## 🚀 Build, CI/CD e Distribuição
+
+O projeto conta com automação de build na nuvem e distribuição contínua:
+*   **EAS Build (Expo Application Services):** Utilizado para gerar os pacotes de instalação da aplicação (`.apk` para Android) diretamente na nuvem do Expo.
+*   **Gestão de Segredos (`EAS Secrets`):** As chaves sensíveis de API e conexões com o Firebase são injetadas de forma segura durante o processo de build do projeto, mantendo credenciais protegidas do repositório público.
+*   **Firebase App Distribution:** Plataforma utilizada para a distribuição automatizada das versões de teste/homologação do APK diretamente para a equipe e homologadores.
+
+---
+
+## 💻 Como Executar o Projeto
 
 Siga os passos abaixo para configurar e rodar o projeto em sua máquina:
 
@@ -73,34 +85,31 @@ Certifique-se de ter instalado em sua máquina:
 
 ### 2. Clonar o Repositório e Instalar Dependências
 ```bash
-git clone https://github.com/Challenge-2026-EloVet/EloPet-Mobile
+git clone [https://github.com/Challenge-2026-EloVet/EloPet-Mobile](https://github.com/Challenge-2026-EloVet/EloPet-Mobile)
 cd EloPet-Mobile
 npm install
 ```
 
 ### 3. Configurar Variáveis de Ambiente
-Crie um arquivo `.env` na raiz do projeto baseando-se nas rotas da sua API backend em Java:
-```env
-EXPO_PUBLIC_API_JAVA_USER_LOGIN=https://sua-api.com/api/v1/auth/login
-EXPO_PUBLIC_API_JAVA_USER_CREATION=https://sua-api.com/api/v1/usuarios
-EXPO_PUBLIC_API_JAVA_USER=https://sua-api.com/api/v1/usuarios
-EXPO_PUBLIC_API_JAVA_PET_CRD=https://sua-api.com/api/v1/pets
-EXPO_PUBLIC_API_JAVA_PET_UPDATE=https://sua-api.com/api/v1/pet
-```
+Crie um arquivo .env na raiz do projeto baseando-se nas rotas da sua API backend em Java e nas credenciais do Firebase passadas em pdf
 
 ### 4. Executar a Aplicação
 Inicie o servidor de desenvolvimento do Expo:
 ```bash
 npm start
 ```
-*   Pressione `a` para abrir no emulador Android.
-*   Pressione `i` para abrir no simulador iOS.
-*   Pressione `w` para executar a versão web.
-*   Escaneie o QR Code exibido no terminal utilizando o aplicativo **Expo Go** no seu celular.
+Pressione a para abrir no emulador Android.
+
+Pressione i para abrir no simulador iOS.
+
+Pressione w para executar a versão web.
+
+Escaneie o QR Code exibido no terminal utilizando o aplicativo Expo Go no seu celular.
 
 ---
 
-## 👥 Equipe / Autoria
+### 👥 Equipe / Autoria
+
 Arthur Graciani	RM561728
 
 Gustavo Oliveira	RM566358

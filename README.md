@@ -6,7 +6,7 @@
 
 ## 📋 Visão Geral do Projeto
 
-O **EloPet** é um projeto acadêmico desenvolvido com o objetivo de facilitar a rotina de cuidados de tutores de cães e gatos. A aplicação centraliza informações vitais sobre o pet, auxilia no acompanhamento preventivo por meio de um assistente de triagem inteligente, e facilita a busca por clínicas veterinárias credencionadas com suporte a geolocalização e rotas.
+O **EloPet** é um projeto acadêmico desenvolvido com o objetivo de facilitar a rotina de cuidados de tutores de cães e gatos. A aplicação centraliza informações vitais sobre o pet, auxilia no acompanhamento preventivo por meio de um assistente de triagem inteligente, e facilita a busca por clínicas veterinárias credenciadas com suporte a geolocalização e rotas.
 
 ---
 
@@ -14,15 +14,15 @@ O **EloPet** é um projeto acadêmico desenvolvido com o objetivo de facilitar a
 
 O projeto foi construído utilizando tecnologias modernas do ecossistema React Native:
 
-*   **Framework:** [React Native](https://reactnative.dev/) (v0.86.3) com [Expo](https://expo.dev/) (~58.0.00)
+*   **Framework:** [React Native](https://reactnative.dev/) com [Expo](https://expo.dev/)
 *   **Banco de Dados & Armazenamento:** [Firebase Firestore](https://firebase.google.com/docs/firestore) para gerenciamento em tempo real do prontuário dos pets.
-*   **Notificações:** Módulo integrado para envio de alertas e notificações push.
-*   **Geolocalização & Mapas:** Permissões de localização do usuário para simulação de uso do Waze e cálculo de rotas até as clínicas.
-*   **Navegação:** [React Navigation](https://reactnavigation.org/) (Bottom Tabs e Native Stack v7)
+*   **Notificações:** Módulo integrado para envio de alertas e notificações push locais.
+*   **Geolocalização & Mapas:** Permissões de localização do usuário para simulação de rotas até as clínicas credenciadas.
+*   **Navegação:** [React Navigation](https://reactnavigation.org/) (Bottom Tabs e Native Stack v7) com suporte a tema adaptativo.
 *   **Gerenciamento de Estado e Cache:** [TanStack React Query](https://tanstack.com/query) (v5)
 *   **Requisições HTTP:** [Axios](https://axios-http.com/)
-*   **Armazenamento Seguro:** `expo-secure-store` (com fallback para `localStorage` no ambiente web)
-*   **Estilização:** StyleSheet nativo otimizado com paleta de cores institucional baseada em tons de verde (`#185A43`, `#A3D9C9`)
+*   **Armazenamento Seguro:** `expo-secure-store` (com fallback para `localStorage` no ambiente web).
+*   **Estilização & Tema Dinâmico:** Suporte nativo ao tema do Sistema Operacional (`useColorScheme`, `userInterfaceStyle: "automatic"` no `app.json`), alternando automaticamente entre os modos Claro e Escuro mantendo a paleta institucional em tons de verde (`#185A43`, `#A3D9C9`).
 
 ---
 
@@ -39,16 +39,17 @@ A aplicação está estruturada em fluxos modulares organizados para proporciona
     *   Tratamento de estado vazio para novos usuários sem pets cadastrados.
 3.  **`ProfileScreen.tsx`:**
     *   Painel do usuário com informações de contato e preferências.
-    *   Listagem integrada de animais de estimação com ações rápidas de edição e remoção (soft delete).
+    *   Listagem integrada de animais de estimação com ações rápidas de edição e remoção (soft delete/sync Firestore).
     *   Modal para atualização de dados cadastrais do responsável.
+    *   **Modal "Sobre o App":** Exibição da versão publicada do aplicativo e do **hash do commit de referência** da versão (`EXPO_PUBLIC_GIT_COMMIT_HASH` / `$EAS_BUILD_GIT_COMMIT_HASH`), garantindo rastreabilidade do build.
 4.  **`RegisterPetScreen.tsx`:**
     *   Formulário unificado para cadastro ou edição de pets (suporta cães, gatos e outras espécies).
     *   Coleta de dados como raça, idade aproximada, data de nascimento, sexo e status de castração.
     *   Invalidação automática de cache via React Query para atualização instantânea nas demais telas.
 5.  **`ClinicSearchScreen.tsx`:**
-    *   Busca interativa por clínicas parceiras na rede credencionada.
+    *   Busca interativa por clínicas parceiras na rede credenciada.
     *   Filtros por especialidades (Ortopedia, Cardiologia, Acessibilidade) e distância.
-    *   Mapa interativo simulado com pinos de localização, solicitação de permissão de geolocalização do usuário e simulação de uso do Waze para traçado de rotas.
+    *   Mapa interativo simulado com pinos de localização, solicitação de permissão de geolocalização do usuário e integração para traçado de rotas.
 6.  **`ChatScreen.tsx`:**
     *   Canal de atendimento com o "Assistente Elo Vet".
     *   Respostas rápidas interativas para relatar o apetite, nível de energia e bem-estar diário do pet.
@@ -61,6 +62,7 @@ A camada de serviços centraliza a comunicação com a API backend e os serviço
 *   **Backend Java:** Configuração dinâmica de cabeçalhos de autorização (`Bearer Token`), endpoints isolados para Autenticação, Gestão de Usuário/Responsável e CRUD de Pets.
 *   **Firebase Firestore:** Utilizado para armazenamento estruturado e sincronização em tempo real do prontuário detalhado dos pets (histórico médico, vacinas e ocorrências).
 *   **Notificações Push:** Implementação de avisos para lembrar o tutor sobre horários de medicamentos, consultas e cuidados diários.
+*   **Sincronização de Tema:** O `NavigationContainer` consome o tema escuro/claro nativo do dispositivo (`DarkTheme` e `DefaultTheme` customizados), garantindo legibilidade e alto contraste no sistema operacional do usuário.
 
 ---
 
@@ -68,7 +70,8 @@ A camada de serviços centraliza a comunicação com a API backend e os serviço
 
 O projeto conta com automação de build na nuvem e distribuição contínua:
 *   **EAS Build (Expo Application Services):** Utilizado para gerar os pacotes de instalação da aplicação (`.apk` para Android) diretamente na nuvem do Expo.
-*   **Gestão de Segredos (`EAS Secrets`):** As chaves sensíveis de API e conexões com o Firebase são injetadas de forma segura durante o processo de build do projeto, mantendo credenciais protegidas do repositório público.
+*   **Captura de Hash do Commit:** Durante o build na nuvem do EAS, a variável `$EAS_BUILD_GIT_COMMIT_HASH` é injetada para alimentar a tela "Sobre o App" com a identificação exata do commit de lançamento.
+*   **Gestão de Segredos (`EAS Secrets`):** As chaves sensíveis de API, endpoints Java e conexões com o Firebase são injetadas de forma segura no processo de build, mantendo as credenciais protegidas fora do repositório público.
 *   **Firebase App Distribution:** Plataforma utilizada para a distribuição automatizada das versões de teste/homologação do APK diretamente para a equipe e homologadores.
 
 ---
@@ -85,37 +88,33 @@ Certifique-se de ter instalado em sua máquina:
 
 ### 2. Clonar o Repositório e Instalar Dependências
 ```bash
-git clone [https://github.com/Challenge-2026-EloVet/EloPet-Mobile](https://github.com/Challenge-2026-EloVet/EloPet-Mobile)
+git clone https://github.com/Challenge-2026-EloVet/EloPet-Mobile
 cd EloPet-Mobile
 npm install
 ```
 
 ### 3. Configurar Variáveis de Ambiente
-Crie um arquivo .env na raiz do projeto baseando-se nas rotas da sua API backend em Java e nas credenciais do Firebase passadas em pdf
+Crie um arquivo `.env` na raiz do projeto baseando-se nas rotas da sua API backend em Java, credenciais do Firebase e variável do Git:
+```env
+EXPO_PUBLIC_GIT_COMMIT_HASH=$EAS_BUILD_GIT_COMMIT_HASH
+```
 
 ### 4. Executar a Aplicação
-Inicie o servidor de desenvolvimento do Expo:
+Inicie o servidor de desenvolvimento do Expo limpando o cache:
 ```bash
-npm start
+npx expo start -c
 ```
-Pressione a para abrir no emulador Android.
-
-Pressione i para abrir no simulador iOS.
-
-Pressione w para executar a versão web.
-
-Escaneie o QR Code exibido no terminal utilizando o aplicativo Expo Go no seu celular.
+* Pressione `a` para abrir no emulador Android.
+* Pressione `i` para abrir no simulador iOS.
+* Pressione `w` para executar a versão web.
+* Escaneie o QR Code exibido no terminal utilizando o aplicativo **Expo Go** no seu celular.
 
 ---
 
 ### 👥 Equipe / Autoria
 
-Arthur Graciani	RM561728
-
-Gustavo Oliveira	RM566358
-
-João Pedro Scarpin	RM565421
-
-Lucas Hideki	RM565355
-
-Wesley Andrade	RM563593
+*   Arthur Graciani — RM561728
+*   Gustavo Oliveira — RM566358
+*   João Pedro Scarpin — RM565421
+*   Lucas Hideki — RM565355
+*   Wesley Andrade — RM563593

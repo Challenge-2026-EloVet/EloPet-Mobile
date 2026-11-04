@@ -10,7 +10,9 @@ import {
   TouchableOpacity,
   View,
   Platform,
+  Image,
 } from 'react-native';
+import Constants from 'expo-constants';
 
 import { deletePetService, getPetsService, updateUserService } from '../services/eloPetService';
 import { useAuth } from '../context/AuthProvider';
@@ -38,6 +40,7 @@ export default function ProfileScreen() {
   const navigation = useNavigation<any>();
 
   const [isEditing, setIsEditing] = useState(false);
+  const [isAboutVisible, setIsAboutVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const [name, setName] = useState('');
@@ -45,6 +48,10 @@ export default function ProfileScreen() {
   const [phone, setPhone] = useState('');
   const [rg, setRg] = useState('');
   const [cpf, setCpf] = useState('');
+
+  // Dados da Versão e Commit para o Modal Sobre
+  const appVersion = Constants.expoConfig?.version || '1.0.0';
+  const commitHash = process.env.EXPO_PUBLIC_GIT_COMMIT_HASH || 'Versão de Desenvolvimento';
 
   useEffect(() => {
     if (user) {
@@ -83,14 +90,10 @@ export default function ProfileScreen() {
     {
       label: 'Sobre',
       detail: 'Informações sobre o aplicativo',
-      icon: 'info' as const,
-      onPress: () => showActionFeedback('Sobre'),
+      icon: 'information-circle-outline' as const,
+      onPress: () => setIsAboutVisible(true),
     },
   ];
-
-  const showActionFeedback = (label: string) => {
-    Alert.alert(label, 'Esta área estará disponível em breve.');
-  };
 
   async function handleEnableNotifications() {
     try {
@@ -219,7 +222,6 @@ export default function ProfileScreen() {
 
   const handlePetExclusion = (pet: any) => {
     const idPetResponsable = pet?.idPetResponsavel;
-    // Identifica o ID do pet propriamente dito (pode estar em idPet ou petId)
     const petId = pet?.idPet || pet?.petId;
 
     Alert.alert(
@@ -232,15 +234,12 @@ export default function ProfileScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              // 1. Remove do backend principal
               await deletePetService(idPetResponsable);
 
-              // 2. 🔹 Deleta o prontuário correspondente no Firebase Firestore
               if (petId) {
                 const numericId = Number(petId);
                 const stringId = String(petId);
 
-                // Tenta buscar pelo ID numérico
                 const qNum = query(collection(db, 'prontuarios'), where('pet.petId', '==', numericId));
                 const snapshotNum = await getDocs(qNum);
 
@@ -249,7 +248,6 @@ export default function ProfileScreen() {
                 if (!snapshotNum.empty) {
                   targetDocRef = snapshotNum.docs[0].ref;
                 } else {
-                  // Se não achar por número, tenta buscar por string
                   const qStr = query(collection(db, 'prontuarios'), where('pet.petId', '==', stringId));
                   const snapshotStr = await getDocs(qStr);
                   if (!snapshotStr.empty) {
@@ -257,10 +255,8 @@ export default function ProfileScreen() {
                   }
                 }
 
-                // Se encontrou o documento, executa o deleteDoc
                 if (targetDocRef) {
                   await deleteDoc(targetDocRef);
-                  console.log(`Prontuário do pet ${petId} deletado com sucesso do Firestore.`);
                 }
               }
 
@@ -389,6 +385,7 @@ export default function ProfileScreen() {
         }
       />
 
+      {/* Modal de Editar Dados Pessoais */}
       <Modal
         visible={isEditing}
         animationType="fade"
@@ -469,6 +466,60 @@ export default function ProfileScreen() {
                   <Text style={styles.saveButtonText}>{isLoading ? 'Salvando...' : 'Salvar'}</Text>
                 </TouchableOpacity>
               </View>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* 🔹 Modal Sobre o App Ajustado */}
+      <Modal
+        visible={isAboutVisible}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => setIsAboutVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Sobre o App</Text>
+              <TouchableOpacity onPress={() => setIsAboutVisible(false)} style={styles.closeButton}>
+                <Ionicons name="close" size={20} color="#185A43" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView contentContainerStyle={styles.aboutScrollContent} showsVerticalScrollIndicator={false}>
+              <View style={styles.aboutBrandSection}>
+                <View style={styles.aboutLogoWrapper}>
+                  <Ionicons name="paw" size={32} color="#185A43" />
+                </View>
+                <Text style={styles.aboutAppName}>EloPet</Text>
+                <Text style={styles.aboutAppDescription}>
+                  Conectando tutores, pets e clínicas com facilidade, segurança e controle total de cuidados.
+                </Text>
+              </View>
+
+              <View style={styles.aboutInfoCard}>
+                <View style={styles.aboutRow}>
+                  <Text style={styles.aboutLabel}>Versão do App</Text>
+                  <Text style={styles.aboutValue}>{appVersion}</Text>
+                </View>
+                
+                {/* Linha ajustada em coluna para o Commit de Referência não sobrepor o texto */}
+                <View style={[styles.aboutRowColumn, { borderBottomWidth: 0 }]}>
+                  <Text style={styles.aboutLabel}>Commit de Referência</Text>
+                  <Text style={styles.aboutCommitValueFull}>
+                    {commitHash}
+                  </Text>
+                </View>
+              </View>
+
+              <TouchableOpacity
+                style={styles.aboutCloseAction}
+                activeOpacity={0.8}
+                onPress={() => setIsAboutVisible(false)}
+              >
+                <Text style={styles.aboutCloseActionText}>Entendido</Text>
+              </TouchableOpacity>
             </ScrollView>
           </View>
         </View>
@@ -786,6 +837,88 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   saveButtonText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  // Estilos específicos atualizados para o Modal Sobre
+  aboutScrollContent: {
+    paddingBottom: 10,
+    alignItems: 'center',
+  },
+  aboutBrandSection: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  aboutLogoWrapper: {
+    height: 64,
+    width: 64,
+    borderRadius: 20,
+    backgroundColor: 'rgba(163, 217, 201, 0.35)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  aboutAppName: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#185A43',
+    marginBottom: 6,
+  },
+  aboutAppDescription: {
+    fontSize: 13,
+    color: '#7E9F8E',
+    textAlign: 'center',
+    paddingHorizontal: 10,
+    lineHeight: 18,
+  },
+  aboutInfoCard: {
+    width: '100%',
+    backgroundColor: '#F8FAFC',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(126, 159, 142, 0.2)',
+    paddingHorizontal: 16,
+    marginBottom: 20,
+  },
+  aboutRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(126, 159, 142, 0.15)',
+  },
+  aboutRowColumn: {
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(126, 159, 142, 0.15)',
+  },
+  aboutLabel: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    color: '#185A43',
+  },
+  aboutValue: {
+    fontSize: 13,
+    color: '#7E9F8E',
+    fontWeight: '600',
+  },
+  aboutCommitValueFull: {
+    fontSize: 13,
+    color: '#185A43',
+    fontWeight: '600',
+    marginTop: 4,
+  },
+  aboutCloseAction: {
+    width: '100%',
+    backgroundColor: '#185A43',
+    borderRadius: 16,
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  aboutCloseActionText: {
     fontSize: 14,
     fontWeight: 'bold',
     color: '#FFFFFF',

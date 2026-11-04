@@ -1,5 +1,5 @@
-import { ActivityIndicator, Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { ActivityIndicator, Platform, StatusBar, StyleSheet, View, useColorScheme } from 'react-native';
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as Notifications from 'expo-notifications';
@@ -24,9 +24,10 @@ if (Platform.OS !== 'web') {
   });
 }
 
-//Criei essa função pq o após a autenticação dentro do Contexto nao tava redirecionando pro app
 function AppNavigator() {
   const { isAuthenticated, isLoading } = useAuth();
+  
+  const colorScheme = useColorScheme();
 
   if (isLoading) {
     return (
@@ -37,9 +38,9 @@ function AppNavigator() {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <StatusBar
-        barStyle="dark-content"
+        barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'}
         backgroundColor="transparent"
         translucent={true}
       />

@@ -77,3 +77,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
   },
 });
+
+// PROJETO FINALIZADO, PENDENTE CHECK DO JOAO
